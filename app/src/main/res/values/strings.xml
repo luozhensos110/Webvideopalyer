@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">超级播放器</string>
+    <string name="select_source">请选择你要打开的视频源：</string>
+
+    <string name="title_activity_vipplayer">vipplayer</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="vip_player">VIP播放</string>
+    <!--相当于定义了一个字符串数组，数组名是sorce_array  -->
+    <string-array name="source_array">
+        <item>播放器①</item>
+        <item>播放器②</item>
+        <item>播放器③</item>
+        <item>播放器④</item>
+        <item>播放器⑤</item>
+        <item>播放器⑥</item>
+            </string-array>
+</resources>
