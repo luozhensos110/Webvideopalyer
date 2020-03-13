@@ -45,23 +45,7 @@ public class VipplayerAcitivity extends AppCompatActivity {
         //初始化视窗
         initView();
         //初始化Agentweb
-        //initAgentWeb(Extra_url);
-        final AgentWeb mAgentWeb = AgentWeb.with(this)
-                .setAgentWebParent(agentWebLL, new LinearLayout.LayoutParams(-1, -1))
-                .useDefaultIndicator()
-                .setWebChromeClient(webChromeClient)
-                .setWebViewClient(webViewClient)
-                .setMainFrameErrorView(R.layout.agentweb_error_page, -1)
-                .setSecurityType(AgentWeb.SecurityType.STRICT_CHECK)
-                //.setWebLayout(new WebLayout(this))
-                .setOpenOtherPageWays(DefaultWebClient.OpenOtherPageWays.DISALLOW)//打开其他应用时，弹窗咨询用户是否前往其他应用
-                .interceptUnkownUrl() //拦截找不到相关页面的Scheme
-                .createAgentWeb()
-                .ready()
-                .go(Extra_url);
-        //private TextView receiveTitle;//用来获取标题提示
-        //定义Webview
-        WebView mAgentwebvip = mAgentWeb.getWebCreator().getWebView();
+        initAgentWeb(Extra_url);
         //加载播放器选项
         //用于承载下拉选择播放器选项
         Spinner spinner = findViewById(R.id.spinner);
@@ -134,8 +118,6 @@ public class VipplayerAcitivity extends AppCompatActivity {
                 .ready()
                 .go(url);
     }
-
-
     // 重新防止跳转其它浏览器
     private WebChromeClient webChromeClient = new WebChromeClient() {
         //获取标题,设置提醒

@@ -27,6 +27,7 @@ class NetUtils {
          */
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         // getSimOperatorName就可以直接获取到运营商的名字
+        assert telephonyManager != null;
         return telephonyManager.getSimOperatorName();
     }
 
