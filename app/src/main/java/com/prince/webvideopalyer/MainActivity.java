@@ -10,26 +10,25 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-    private String aqy_url="https://www.iqiyi.com/";
-    private String txsp_url="https://v.qq.com/";
-    private String youku_url="https://www.youku.com/";
+    private String aqy_url="https://www.iqiyi.com/";//声明变量用于存储按钮对应的视频源
+    private String txsp_url="https://v.qq.com/";    //声明变量用于存储按钮对应的视频源
+    private String youku_url="https://www.youku.com/";//声明变量用于存储按钮对应的视频源
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //getSupportActionBar().hide();
         //设置竖屏
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
-        if (PermissionUtils.isGrantExternalRW(this, 1)) {
-        }
+        PermissionUtils.isGrantExternalRW(this, 1);
         //实例化图片按钮对象
-        ImageButton btn_aqy = (ImageButton)findViewById(R.id.imgBtn_aqy);
-        ImageButton btn_txsp=(ImageButton)findViewById(R.id.imgBtn_txsp);
-        ImageButton btn_youku=(ImageButton)findViewById(R.id.imgBtn_youku);
+        ImageButton btn_aqy = findViewById(R.id.imgBtn_aqy);
+        ImageButton btn_txsp= findViewById(R.id.imgBtn_txsp);
+        ImageButton btn_youku= findViewById(R.id.imgBtn_youku);
         //检测当前是否有网络连接
         boolean isNetConnected = NetUtils.isNetConnected(MainActivity.this);
         //判断当前网络是否是WIFI
@@ -39,10 +38,9 @@ public class MainActivity extends AppCompatActivity {
         }else{
          if(!isWifiConnected){
              Toast.makeText(MainActivity.this,"当前使用流量,注意流量消耗！",Toast.LENGTH_SHORT).show();
-         }else{
          }
         }
-        //按钮监听
+        //按钮1监听
         btn_aqy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        //按钮2监听
         btn_txsp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        //按钮3监听
         btn_youku.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,15 +76,13 @@ public class MainActivity extends AppCompatActivity {
     }
     //对获取权限处理的结果
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case 1:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //检验是否获取权限，如果获取权限，外部存储会处于开放状态，会弹出一个toast提示获得授权
                     String sdCard = Environment.getExternalStorageState();
-                    if (sdCard.equals(Environment.MEDIA_MOUNTED)){
-                        //Toast.makeText(this,"获得授权",Toast.LENGTH_LONG).show();
-                    }
+                    //Toast.makeText(this,"获得授权",Toast.LENGTH_LONG).show();
                 } else {
                     runOnUiThread(new Runnable() {
                         @Override

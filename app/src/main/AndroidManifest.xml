@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.prince.webvideopalyer">
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 网络权限（PT）-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/><!--音量权限-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/><!--写存储权限-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/><!--读存储权限-->
+    <uses-permission android:name="android.permission.VIBRATE" /><!--震动权限-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /><!--网络状态权限（PT）-->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- WIFI状态权限（PT） --><!-- 定位权限（PT） -->
 
@@ -16,7 +19,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:targetApi="m">
         <activity
             android:name=".VIP_Acitivity"
             android:hardwareAccelerated="true"
