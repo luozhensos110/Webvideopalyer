@@ -1,13 +1,14 @@
 package com.prince.webvideopalyer;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -79,6 +80,42 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //重载Menu菜单
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main,menu);
+        return true;
+    }
+
+    //menu点击事件处理
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+       switch (item.getItemId()){
+           case R.id.About:
+               Intent intent1=new Intent(MainActivity.this,AboutAcitivity.class);
+               startActivity(intent1);
+               break;
+           case R.id.Contact_us:
+               Log.d("MENU","点击的是联系我们菜单");
+               // 必须明确使用mailto前缀来修饰邮件地址,如果使用
+               // intent.putExtra(Intent.EXTRA_EMAIL, email)，结果将匹配不到任何应用
+               Uri uri = Uri.parse("mailto:297006042@qq.com");
+               String[] email = {"297006042@qq.com"};
+               Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+               intent.putExtra(Intent.EXTRA_CC, email); // 抄送人
+               intent.putExtra(Intent.EXTRA_SUBJECT, "关于WebVideoPlayer"); // 主题
+               intent.putExtra(Intent.EXTRA_TEXT, ""); // 正文
+               startActivity(Intent.createChooser(intent, "请选择邮件类应用"));
+               break;
+           case R.id.Check_update:
+               Log.d("MENU","点击的是检查更新菜单");
+               int versionCode = APKVersionCodeUtils.getVersionCode(this);
+               Log.d("MENU","获取到的本地版本号是："+versionCode);
+               break;
+       }
+       return true;
+    }
+
     //对获取权限处理的结果
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -98,22 +135,5 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
-
-    //隐藏虚拟按键，并且全屏函数hideBottomUIMenu()
-    @SuppressLint("ObsoleteSdkInt")
-    protected void hideBottomUIMenu() {
-        //隐藏虚拟按键，并且全屏
-        if (Build.VERSION.SDK_INT < 19) { // lower api
-            View v = this.getWindow().getDecorView();
-            v.setSystemUiVisibility(View.GONE);
-        } else {
-            //for new api versions.
-            View decorView = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
-            decorView.setSystemUiVisibility(uiOptions);
-        }
-    }
-
 
 }

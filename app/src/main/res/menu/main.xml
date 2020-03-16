@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--菜单设置-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/Check_update"
+        android:title="@string/check_new"/>
+    <item
+        android:id="@+id/About"
+        android:title="@string/About"/>
+    <item
+    android:id="@+id/Contact_us"
+    android:title="@string/contact_us"/>
+</menu>

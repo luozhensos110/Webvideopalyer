@@ -6,7 +6,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="vip_player">VIP播放</string>
-    <!--相当于定义了一个字符串数组，数组名是sorce_array  -->
+    <!--相当于定义了一个字符串数组，数组名是source_array  -->
     <string-array name="source_array">
         <item>播放器①</item>
         <item>播放器②</item>
@@ -14,5 +14,9 @@
         <item>播放器④</item>
         <item>播放器⑤</item>
         <item>播放器⑥</item>
-            </string-array>
+    </string-array>
+    <string name="check_new">检查更新</string>
+    <string name="About">关 于</string>
+    <string name="contact_us">联系我们</string>
+    <string name="about_info">超级播放器只是学习用途，勿用于商业</string>
 </resources>
