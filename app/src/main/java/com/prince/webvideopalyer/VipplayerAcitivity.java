@@ -1,7 +1,9 @@
 package com.prince.webvideopalyer;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -38,6 +40,8 @@ public class VipplayerAcitivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //隐藏标题栏
         Objects.requireNonNull(getSupportActionBar()).hide();
+        //隐藏导航栏
+        hideBottomUIMenu();
         setContentView(R.layout.activity_vipplayer_acitivity);
        //接收Intent传递过来的数据
         Intent intent = getIntent();
@@ -45,7 +49,19 @@ public class VipplayerAcitivity extends AppCompatActivity {
         //初始化视窗
         initView();
         //初始化Agentweb
-        initAgentWeb(Extra_url);
+        AgentWeb mAgentWeb = AgentWeb.with(this)
+                .setAgentWebParent(agentWebLL, new LinearLayout.LayoutParams(-1, -1))
+                .useDefaultIndicator()
+                .setWebChromeClient(webChromeClient)
+                .setWebViewClient(webViewClient)
+                .setMainFrameErrorView(R.layout.agentweb_error_page, -1)
+                .setSecurityType(AgentWeb.SecurityType.STRICT_CHECK)
+                //.setWebLayout(new WebLayout(this))
+                .setOpenOtherPageWays(DefaultWebClient.OpenOtherPageWays.DISALLOW)//打开其他应用时，弹窗咨询用户是否前往其他应用
+                .interceptUnkownUrl() //拦截找不到相关页面的Scheme
+                .createAgentWeb()
+                .ready()
+                .go(Extra_url);
         //加载播放器选项
         //用于承载下拉选择播放器选项
         Spinner spinner = findViewById(R.id.spinner);
@@ -96,28 +112,28 @@ public class VipplayerAcitivity extends AppCompatActivity {
         });
     }
 
+    //   隐藏虚拟按键，并且全屏函数hideBottomUIMenu()
+    @SuppressLint("ObsoleteSdkInt")
+    protected void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT < 19) { // lower api
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else {
+            //for new api versions.
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
     //初始化视窗函数initView();
     private void initView() {
         agentWebLL = findViewById(R.id.agentWeb);
         Log.d("Vipplayer","页面初始化");
     }
 
-    //初始化Agentweb函数initAgentWeb(String url);url为要加载地址;
-    private void initAgentWeb(String url) {
-        AgentWeb mAgentWeb = AgentWeb.with(this)
-                .setAgentWebParent(agentWebLL, new LinearLayout.LayoutParams(-1, -1))
-                .useDefaultIndicator()
-                .setWebChromeClient(webChromeClient)
-                .setWebViewClient(webViewClient)
-                .setMainFrameErrorView(R.layout.agentweb_error_page, -1)
-                .setSecurityType(AgentWeb.SecurityType.STRICT_CHECK)
-                //.setWebLayout(new WebLayout(this))
-                .setOpenOtherPageWays(DefaultWebClient.OpenOtherPageWays.DISALLOW)//打开其他应用时，弹窗咨询用户是否前往其他应用
-                .interceptUnkownUrl() //拦截找不到相关页面的Scheme
-                .createAgentWeb()
-                .ready()
-                .go(url);
-    }
     // 重新防止跳转其它浏览器
     private WebChromeClient webChromeClient = new WebChromeClient() {
         //获取标题,设置提醒

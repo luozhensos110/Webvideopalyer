@@ -47,6 +47,8 @@ public class VIP_Acitivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //隐藏标题栏
         Objects.requireNonNull(getSupportActionBar()).hide();
+        //隐藏导航栏
+        hideBottomUIMenu();
         //加载Layout
         setContentView(R.layout.activity_vip_acitivity);
         //获取intent传递的数据
@@ -145,6 +147,22 @@ public class VIP_Acitivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+   //   隐藏虚拟按键，并且全屏函数hideBottomUIMenu()
+    @SuppressLint("ObsoleteSdkInt")
+    protected void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT < 19) { // lower api
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else {
+            //for new api versions.
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
     }
 
     //获取屏幕高度getHeight();返回屏幕高度
