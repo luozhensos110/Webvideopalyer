@@ -6,12 +6,22 @@
       <w>baidu</w>
       <w>distancex</w>
       <w>distancey</w>
+      <w>downloadurl</w>
       <w>imsi</w>
       <w>ivback</w>
+      <w>newdownloadurl</w>
+      <w>newinfo</w>
       <w>newurl</w>
+      <w>newversioncode</w>
+      <w>newversionname</w>
+      <w>notwifi</w>
+      <w>serverurl</w>
       <w>setbrightness</w>
       <w>setvolness</w>
+      <w>theversion</w>
       <w>txsp</w>
+      <w>urlpath</w>
+      <w>versionname</w>
       <w>vippalyer</w>
       <w>vipplayer</w>
       <w>volness</w>

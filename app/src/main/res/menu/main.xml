@@ -10,4 +10,7 @@
     <item
     android:id="@+id/Contact_us"
     android:title="@string/contact_us"/>
+    <item
+        android:id="@+id/Server_url"
+        android:title="@string/serverurl"/>
 </menu>
