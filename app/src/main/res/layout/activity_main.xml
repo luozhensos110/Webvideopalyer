@@ -33,7 +33,7 @@
                 android:layout_height="193dp"
                 android:scaleType="fitXY"
                 app:srcCompat="@mipmap/main_title"
-                android:contentDescription="TODO" />
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/textView"
@@ -49,21 +49,23 @@
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
                 app:srcCompat="@mipmap/aqy"
-                android:contentDescription="TODO" />
+                tools:ignore="ContentDescription" />
 
             <ImageButton
                 android:id="@+id/imgBtn_txsp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
-                app:srcCompat="@mipmap/txsp" />
+                app:srcCompat="@mipmap/txsp"
+                tools:ignore="ContentDescription" />
 
             <ImageButton
                 android:id="@+id/imgBtn_youku"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
-                app:srcCompat="@mipmap/youku" />
+                app:srcCompat="@mipmap/youku"
+                tools:ignore="ContentDescription" />
         </LinearLayout>
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

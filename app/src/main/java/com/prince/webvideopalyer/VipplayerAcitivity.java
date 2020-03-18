@@ -2,6 +2,7 @@ package com.prince.webvideopalyer;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,14 +17,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.DefaultWebClient;
 import com.just.agentweb.WebChromeClient;
 import com.just.agentweb.WebViewClient;
-
 import java.util.Objects;
 
 public class VipplayerAcitivity extends AppCompatActivity {
@@ -43,8 +42,9 @@ public class VipplayerAcitivity extends AppCompatActivity {
         //隐藏导航栏
         hideBottomUIMenu();
         setContentView(R.layout.activity_vipplayer_acitivity);
+        AppManager.getAppManager().addActivity(this);
        //接收Intent传递过来的数据
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         String Extra_url = intent.getStringExtra("Extra_url");
         //初始化视窗
         initView();
@@ -104,11 +104,22 @@ public class VipplayerAcitivity extends AppCompatActivity {
         btn_VIP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences preferences = getSharedPreferences("config",MODE_PRIVATE);
+                //判断是否注册
+                boolean isRegister=preferences.getBoolean("isRegister",false);
+                //isRegister=true;  //测试用
+                Log.d("Register","注册标志为："+isRegister);
+                if (isRegister){
                 Intent intent=new Intent(VipplayerAcitivity.this,VIP_Acitivity.class);
                 intent.putExtra("Extra_Vip_start_id",url_start_id);
                 intent.putExtra("Extra_Vip_end",url_end);
                 //Log.d("Test","准备传送到下一个Acitivity的URL为："+url_vip);
-                startActivity(intent); }
+                startActivity(intent);}
+                else{
+                    Toast.makeText(VipplayerAcitivity.this,"尚未注册，请先注册软件",Toast.LENGTH_SHORT).show();
+                    Intent intent_register=new Intent(VipplayerAcitivity.this,RegisterAcitivity.class);
+                    startActivity(intent_register);
+                } }
         });
     }
 
@@ -154,7 +165,6 @@ public class VipplayerAcitivity extends AppCompatActivity {
             Log.d("Test","获取到的新地址为："+request.getUrl());
             //url_end = request.getUrl().toString();
             return super.shouldOverrideUrlLoading(view, request);
-
         }
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {

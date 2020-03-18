@@ -24,4 +24,10 @@
     <string name="cancel">取消</string>
     <string name="Theversion">软件版本提示</string>
     <string name="serverurl">服务器地址</string>
+    <string name="content_reg">请联系QQ/WX：297006042获取注册码</string>
+    <string name="reg">注 册</string>
+    <string name="get_phoneSn">获取本机序列号</string>
+    <string name="input_regNum">请输入注册码</string>
+    <string name="Phone_sn">手机序列号</string>
+    <string name="register_pic">Register页面图片</string>
 </resources>

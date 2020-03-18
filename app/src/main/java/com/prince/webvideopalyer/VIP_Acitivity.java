@@ -1,6 +1,6 @@
 package com.prince.webvideopalyer;
 /*
-*  VIP_PlayerUI;
+ *  VIP_PlayerUI;
  */
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -51,6 +51,7 @@ public class VIP_Acitivity extends AppCompatActivity {
         hideBottomUIMenu();
         //加载Layout
         setContentView(R.layout.activity_vip_acitivity);
+        AppManager.getAppManager().addActivity(this);
         //获取intent传递的数据
         Intent intent = getIntent();
         //private TextView receiveTitle;//用于标题提示

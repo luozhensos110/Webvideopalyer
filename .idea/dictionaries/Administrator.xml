@@ -3,12 +3,17 @@
     <words>
       <w>acitivity</w>
       <w>agentweb</w>
+      <w>autofill</w>
       <w>baidu</w>
       <w>checkupdate</w>
+      <w>checkurl</w>
+      <w>clipdata</w>
       <w>distancex</w>
       <w>distancey</w>
       <w>downloadurl</w>
       <w>filechooser</w>
+      <w>getphonesn</w>
+      <w>imei</w>
       <w>imsi</w>
       <w>ivback</w>
       <w>natapp</w>
@@ -18,10 +23,12 @@
       <w>newversioncode</w>
       <w>newversionname</w>
       <w>notwifi</w>
+      <w>phonesn</w>
       <w>serverurl</w>
       <w>setbrightness</w>
       <w>setvolness</w>
       <w>theversion</w>
+      <w>tiankong</w>
       <w>txsp</w>
       <w>urlpath</w>
       <w>versionname</w>

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -17,25 +18,32 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static com.prince.webvideopalyer.AppManager.getAppManager;
+import static java.lang.System.exit;
+
 public class MainActivity extends AppCompatActivity {
     private String aqy_url="https://www.iqiyi.com/";  //声明变量用于存储按钮对应的视频源
     private String txsp_url="https://v.qq.com/";      //声明变量用于存储按钮对应的视频源
     private String youku_url="https://www.youku.com/";//声明变量用于存储按钮对应的视频源
     private Integer newversioncode=1 ;                //声明变量用于存储从服务器端获取的versioncode，并赋予初值
-    private String newversionname ;                   //声明变量用于存储从服务器端获取的newversionname.
     private String newdownloadurl;                    //声明变量用于存储从服务器端获取的newdownloadurl
     private String newinfo;                           //声明变量用于存储从服务器端获取的newinfo
-    public String Urlpath="";                         //声明变量用于存储服务端配置文件路径,正式版为固定值
+    public  String Urlpath="";                        //声明变量用于存储服务端配置文件路径,正式版为固定值
+    private static final int TIME_EXIT=2000;          //声明变量用于两次退出判断
+    private long mBackPressed;                         //声明变量用于两次退出判断，记录按键时间
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         //隐藏导航栏
         //hideBottomUIMenu();
         setContentView(R.layout.activity_main);
+        getAppManager().addActivity(this);
         PermissionUtils.isGrantExternalRW(this, 1);
         //实例化图片按钮对象
         ImageButton btn_aqy = findViewById(R.id.imgBtn_aqy);
@@ -104,8 +113,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Object doInBackground(Object[] params) {
             //获取网络数据
-            String path=Urlpath;
-            Log.d("MSG","Urlpath检查："+Urlpath);
+            SharedPreferences preferences = getSharedPreferences("config",MODE_PRIVATE);
+            String path =preferences.getString("Checkurl","");
+            Log.d("MSG","Urlpath检查："+path);
             try {
                 URL url=new URL(path);
                 HttpURLConnection connection= (HttpURLConnection) url.openConnection();
@@ -140,8 +150,9 @@ public class MainActivity extends AppCompatActivity {
                         switch (type){
                             case XmlPullParser.START_TAG:{
                                 if("versionname".equals(nodeName)){
-                                    newversionname=pullParser.nextText();
-                                    Log.d("Server_info","newversionname="+newversionname);
+                                    //声明变量用于存储从服务器端获取的newversionname.
+                                    String newversionname = pullParser.nextText();
+                                    Log.d("Server_info","newversionname="+ newversionname);
                                 }else if("versioncode".equals(nodeName)){
                                     newversioncode =Integer.parseInt(pullParser.nextText());
                                     Log.d("Server_info","newversioncode="+ newversioncode.toString());
@@ -209,21 +220,19 @@ public class MainActivity extends AppCompatActivity {
                    // Log.d("登录页面_检查更新","选择更新，网络未连接，请检查连接并稍后再试！");
                     break;
                 }else{
+                    SharedPreferences preferences = getSharedPreferences("config",MODE_PRIVATE);
+                    //String str1 = preferences.getString("str1","");
+                    Urlpath=preferences.getString("Checkurl","");
                     //设置更新文件地址
-                    if(Urlpath==null){
-                        //setCheckUpdate();
-                        Urlpath="http://texxa7.natappfree.cc/update.xml";
+                    if(Urlpath.isEmpty()){
+                        Toast.makeText(MainActivity.this,"更新地址为空,请输入更新地址！",Toast.LENGTH_SHORT).show();
+                        setCheckUpdate();
+                        //Urlpath="http://texxa7.natappfree.cc/update.xml";
                         break;
                     }else{
                     //获取服务器端信息
-                    new MyXmlTask().execute();
-                    //获取服务器端信息测试
-                    //Log.d("登录页面_检查更新","准备更新，准备从服务器获取数据");
-                    //Log.d("登录页面_检查更新","准备更新，获取的Code是："+newversioncode);
-                    //Log.d("登录页面_检查更新","准备更新，获取的Name是："+newversionname);
-                    //Log.d("登录页面_检查更新","准备更新，获取的Url是："+newdownloadurl);
-                    //Log.d("登录页面_检查更新","准备更新，获取的Info是："+newinfo);
-                    //获取本地信息
+                        AsyncTask execute = new MyXmlTask().execute();
+                        //获取本地信息
                     int versionCode = APKVersionCodeUtils.getVersionCode(this);
                     //Log.d("登录页面_检查更新","获取到的本地版本号是："+versionCode);
                     //判断是否需要更新
@@ -295,25 +304,20 @@ public class MainActivity extends AppCompatActivity {
                         dialog.show();
 
                     }else{
-                        //否则吐司，说现在是最新的版本
                         Log.d("登录页面_检查更新","当前的版本无需更新:");
-                        //通用吐司小米显示应用名称问题
-                        Toast toast = Toast.makeText(this,null,Toast.LENGTH_SHORT);
-                        toast.setText("当前已经是最新的版本");
-                        toast.show();
+                        Toast.makeText(MainActivity.this,"当前已经是最新的版本",Toast.LENGTH_SHORT).show();
                     }
                     break;
                 }}
                 //选择关于按钮后事件
             case R.id.About:
-                //Log.d("登录页面_关于","打开关于页面");
+                //Log.d("登录页面_关于","打开关于页面");;
                 Intent intent = new Intent(MainActivity.this,AboutAcitivity.class);
                 startActivity(intent);
                 break;
             case R.id.Contact_us:
                 //Log.d("MENU","点击的是联系我们菜单");
-                // 必须明确使用mailto前缀来修饰邮件地址,如果使用
-                // intent.putExtra(Intent.EXTRA_EMAIL, email)，结果将匹配不到任何应用
+                // 必须明确使用mailto前缀来修饰邮件地址,如果使用,intent.putExtra(Intent.EXTRA_EMAIL, email)，结果将匹配不到任何应用
                 Uri uri = Uri.parse("mailto:297006042@qq.com");
                 String[] email = {"297006042@qq.com"};
                 Intent intent_Contact = new Intent(Intent.ACTION_SENDTO, uri);
@@ -345,11 +349,27 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int which) {
             inputServer.getText().toString();
+            SharedPreferences.Editor editor = getSharedPreferences("config",MODE_PRIVATE).edit();
+            editor.putString("Checkurl", inputServer.getText().toString());
             Log.d("MENU","输入的检查更新的地址为："+inputServer.getText().toString());
-            Urlpath=inputServer.getText().toString();
+            editor.apply();
         }
     });
         builder.show();
+    }
+
+    //两次返回退出应用
+    @Override
+    public void onBackPressed(){
+        if(mBackPressed+TIME_EXIT>System.currentTimeMillis()){
+            //super.onBackPressed();
+            getAppManager().finishAllActivity();
+            getAppManager().AppExit(this);
+            exit(0);
+        }else{
+            Toast.makeText(this,"再点击一次返回退出程序",Toast.LENGTH_SHORT).show();
+            mBackPressed=System.currentTimeMillis();
+        }
     }
 
     //对获取权限处理的结果
@@ -359,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //检验是否获取权限，如果获取权限，外部存储会处于开放状态，会弹出一个toast提示获得授权
                 //String sdCard = Environment.getExternalStorageState();
-                //Toast.makeText(this,"获得授权",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"获得授权",Toast.LENGTH_LONG).show();
             } else {
                 //开启线并提示
                 runOnUiThread(new Runnable() {
