@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="fitXY"
-            app:srcCompat="@mipmap/reg"
+            app:srcCompat="@mipmap/reg_jpg"
             android:contentDescription="@string/register_pic" />
 
         <TextView
