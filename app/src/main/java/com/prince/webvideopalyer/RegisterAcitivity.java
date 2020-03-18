@@ -1,6 +1,5 @@
 package com.prince.webvideopalyer;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -29,6 +28,7 @@ public class RegisterAcitivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_acitivity);
         PhoneSn = getDeviceSN();
+        //Log.d("REG",PhoneSn);
         editText_pwd=findViewById(R.id.editText_register);
         textView_PhoneSn=findViewById(R.id.textView_phonesn);
         //定义控件
@@ -84,8 +84,24 @@ public class RegisterAcitivity extends AppCompatActivity {
         System.out.println("加密后的字符串为:"+desc);
         return desc;
     }
-
-    //获取设备序列号,用于注册
+    //生成设备唯一标识符
+    public static String getDeviceSN() {
+        String serialNumber = "3501" + //we make this look like a valid IMEI
+                Build.BOARD.length() % 10 +
+                Build.BRAND.length() % 10 +
+                Build.DEVICE.length() % 10 +
+                Build.DISPLAY.length() % 10 +
+                Build.HOST.length() % 10 +
+                Build.ID.length() % 10 +
+                Build.MANUFACTURER.length() % 10 +
+                Build.MODEL.length() % 10 +
+                Build.PRODUCT.length() % 10 +
+                Build.TAGS.length() % 10 +
+                Build.TYPE.length() % 10 +
+                Build.USER.length() % 10; //13 digits
+        return serialNumber;
+    }
+    /**获取设备序列号,用于注册(有BUG 部分设备返回为unknown)
     public static String getDeviceSN(){
 
         @SuppressLint("HardwareIds")
@@ -93,4 +109,5 @@ public class RegisterAcitivity extends AppCompatActivity {
 
         return serialNumber;
     }
+     **/
 }
