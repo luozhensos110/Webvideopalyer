@@ -5,11 +5,9 @@ import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,14 +48,11 @@ public class RegisterAcitivity extends AppCompatActivity {
                     editor.apply();
                     SharedPreferences preferences = getSharedPreferences("config",MODE_PRIVATE);
                     boolean str1 = preferences.getBoolean("isRegister",false);
-                    Log.d("Register","注册标志为："+str1);
-                    Toast.makeText(RegisterAcitivity.this,"注册成功",Toast.LENGTH_SHORT).show();
-                    Intent intent_register=new Intent(RegisterAcitivity.this,VipplayerAcitivity.class);
-                    startActivity(intent_register);
+                    Toast.makeText(RegisterAcitivity.this,"注册成功！",Toast.LENGTH_SHORT).show();
+                    //Intent intent_register=new Intent(RegisterAcitivity.this,VipplayerAcitivity.class);
+                    //startActivity(intent_register);
 
                 }else{
-                    Log.d("Register","pwd="+pwd);
-                    Log.d("Register","key="+key);
                     Toast.makeText(RegisterAcitivity.this,"注册码错误,请重新输入",Toast.LENGTH_SHORT).show();
                 }
             }
@@ -82,7 +77,6 @@ public class RegisterAcitivity extends AppCompatActivity {
         }
         );
     }
-
     //加密方法Set_Key（Phone_sn）
     @RequiresApi(api = Build.VERSION_CODES.O)
     private String Set_Key(String Phone_sn){

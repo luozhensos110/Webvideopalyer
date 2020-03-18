@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -76,9 +75,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(MainActivity.this,VipplayerAcitivity.class);
-                Log.d("Main","准备启动VipplayerAcitivity");
                 intent.putExtra("Extra_url",aqy_url);
-                Log.d("Main","准备传送到下一个Acitivity的URL为："+aqy_url);
+                //Log.d("Main","准备传送到下一个Acitivity的URL为："+aqy_url);
                 startActivity(intent);
             }
         });
@@ -87,9 +85,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(MainActivity.this,VipplayerAcitivity.class);
-                Log.d("Main","准备启动VipplayerAcitivity");
                 intent.putExtra("Extra_url",txsp_url);
-                Log.d("Main","准备传送到下一个Acitivity的URL为："+txsp_url);
+                //Log.d("Main","准备传送到下一个Acitivity的URL为："+txsp_url);
                 startActivity(intent);
             }
         });
@@ -98,9 +95,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(MainActivity.this,VipplayerAcitivity.class);
-                Log.d("Main","准备启动VipplayerAcitivity");
                 intent.putExtra("Extra_url",youku_url);
-                Log.d("Main","准备传送到下一个Acitivity的URL为："+youku_url);
+                //Log.d("Main","准备传送到下一个Acitivity的URL为："+youku_url);
                 startActivity(intent);
             }
         });
@@ -115,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
             //获取网络数据
             SharedPreferences preferences = getSharedPreferences("config",MODE_PRIVATE);
             String path =preferences.getString("Checkurl","");
-            Log.d("MSG","Urlpath检查："+path);
+            //Log.d("MSG","Urlpath检查："+path);
             try {
                 URL url=new URL(path);
                 HttpURLConnection connection= (HttpURLConnection) url.openConnection();
@@ -129,20 +125,20 @@ public class MainActivity extends AppCompatActivity {
                 connection.setConnectTimeout(5000);
                 //获取结果码
                 int code=connection.getResponseCode();
-                Log.d("MSG","获取到的请求码："+code);
+                //Log.d("MSG","获取到的请求码："+code);
                 if(200==code){
                     InputStream is=connection.getInputStream();//获取读流
-                    Log.d("test","获取数据流");
+                    //Log.d("test","获取数据流");
                     //解析XML  （我们使用Android特有的pull解析）
                     //实例化解析器
                     XmlPullParser pullParser= Xml.newPullParser();
-                    Log.d("test","实例化解析器");
+                    //Log.d("test","实例化解析器");
                     //进行解析  (参数一：数据源（网络流）；参数二：编码方式)
                     pullParser.setInput(is,"UTF-8");
-                    Log.d("test","进行解析");
+                    //Log.d("test","进行解析");
                     //解析标签类型
                     int type=pullParser.getEventType();
-                    Log.d("test","设置变量存储类型");
+                    //Log.d("test","设置变量存储类型");
                     //判断不是结束标签
                     while(type!=XmlPullParser.END_DOCUMENT){
                         //设置变量用于存储标签名称
@@ -152,18 +148,18 @@ public class MainActivity extends AppCompatActivity {
                                 if("versionname".equals(nodeName)){
                                     //声明变量用于存储从服务器端获取的newversionname.
                                     String newversionname = pullParser.nextText();
-                                    Log.d("Server_info","newversionname="+ newversionname);
+                                    //Log.d("Server_info","newversionname="+ newversionname);
                                 }else if("versioncode".equals(nodeName)){
                                     newversioncode =Integer.parseInt(pullParser.nextText());
-                                    Log.d("Server_info","newversioncode="+ newversioncode.toString());
+                                    //Log.d("Server_info","newversioncode="+ newversioncode.toString());
                                 }
                                 else if("downloadurl".equals(nodeName)){
                                     newdownloadurl = pullParser.nextText();
-                                    Log.d("Server_info","newdownloadurl="+newdownloadurl);
+                                    //Log.d("Server_info","newdownloadurl="+newdownloadurl);
                                 }
                                 else if("newinfo".equals(nodeName)){
                                     newinfo=pullParser.nextText();
-                                    Log.d("Server_info","newinfo="+newinfo);
+                                    //Log.d("Server_info","newinfo="+newinfo);
                                 }
                                 break;
                             }
@@ -210,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
             //选择更新按钮后事件
             case R.id.Check_update:
-                Log.d("登录页面_检查更新","选择更新，当前检查的页面是："+Urlpath);
+                //Log.d("登录页面_检查更新","选择更新，当前检查的页面是："+Urlpath);
                 //获取是否连接网络
                 boolean isNetConnected = NetUtils.isNetConnected(MainActivity.this);
                 if(!isNetConnected){
@@ -234,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
                         AsyncTask execute = new MyXmlTask().execute();
                         //获取本地信息
                     int versionCode = APKVersionCodeUtils.getVersionCode(this);
-                    //Log.d("登录页面_检查更新","获取到的本地版本号是："+versionCode);
                     //判断是否需要更新
                     if (versionCode < newversioncode) {
                         Toast toast = Toast.makeText( MainActivity.this, null, Toast.LENGTH_SHORT);
@@ -269,7 +264,6 @@ public class MainActivity extends AppCompatActivity {
                         dialog.setButton(DialogInterface.BUTTON_POSITIVE,"现在更新", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.d("登录页面_检查更新","点击的是现在更新按钮");
                                 //关闭对话框
                                 dialog.dismiss();
                                 //获取当前网络状态类型
@@ -304,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
                         dialog.show();
 
                     }else{
-                        Log.d("登录页面_检查更新","当前的版本无需更新:");
+                        //Log.d("登录页面_检查更新","当前的版本无需更新:");
                         Toast.makeText(MainActivity.this,"当前已经是最新的版本",Toast.LENGTH_SHORT).show();
                     }
                     break;
@@ -351,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
             inputServer.getText().toString();
             SharedPreferences.Editor editor = getSharedPreferences("config",MODE_PRIVATE).edit();
             editor.putString("Checkurl", inputServer.getText().toString());
-            Log.d("MENU","输入的检查更新的地址为："+inputServer.getText().toString());
+            //Log.d("MENU","输入的检查更新的地址为："+inputServer.getText().toString());
             editor.apply();
         }
     });

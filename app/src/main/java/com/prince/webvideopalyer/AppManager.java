@@ -3,7 +3,6 @@ package com.prince.webvideopalyer;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
-
 import java.util.Stack;
 
 public class AppManager {

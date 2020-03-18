@@ -10,7 +10,6 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -19,8 +18,10 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.DefaultWebClient;
 import com.just.agentweb.WebChromeClient;
@@ -64,14 +65,14 @@ public class VIP_Acitivity extends AppCompatActivity {
         //完整地址拼接
         //定义变量来存储拼接好的地址
         String vip_url = Vip_start + vip_end;
-        Log.d("Test","需要解析的地址为："+ vip_end);
-        Log.d("Test","选择打开的视频源是："+ vip_url);
+        //Log.d("Test","需要解析的地址为："+ vip_end);
+        //Log.d("Test","选择打开的视频源是："+ vip_url);
         //获取屏幕宽度
         width=getWidth();
         //获取屏幕高度
         height=getHeight();
-        Log.d("Test","高度"+height);
-        Log.d("Test","宽度"+width);
+        //Log.d("Test","高度"+height);
+        //Log.d("Test","宽度"+width);
         //初始化视窗
         initView();
         AgentWeb mAgentWeb = AgentWeb.with(this)
@@ -95,12 +96,12 @@ public class VIP_Acitivity extends AppCompatActivity {
         mAgentweb_vip.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.d("Touch","TOUCH事件触发！");
+                //Log.d("Touch","TOUCH事件触发！");
                 switch (event.getAction()){
                     case MotionEvent.ACTION_DOWN:
                         startX = event.getX();
                         startY = event.getY();
-                        Log.d("Touch","初始坐标X="+startX+",  Y="+startY);
+                        //Log.d("Touch","初始坐标X="+startX+",  Y="+startY);
                         break;
                     case MotionEvent.ACTION_MOVE:
                         float endX = event.getX();
@@ -108,31 +109,31 @@ public class VIP_Acitivity extends AppCompatActivity {
                         float distancey = startY - endY;//用于计算y轴移动距离
                         float distancex = startX - endX;//用于计算x轴移动距离，防止误触发
                         boolean isNot_set = Math.abs(distancex)> 5 || startY>height*0.9;
-                        Log.d("Test","isNot_set="+isNot_set);
+                        //Log.d("Test","isNot_set="+isNot_set);
                         if(isNot_set){
                             break;
                         }else{
                         if(startX>width/2){
                             //音量调节
-                            Log.d("Touch","触摸右边部分");
+                            //Log.d("Touch","触摸右边部分");
                             final double FLING_MIN_DISTANCE = 0.5;
                             final double FLING_MIN_VELOCITY = 0.5;
                             //AudioManager am=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
                             //int maxVolume=am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
                             //Log.d("VOL","最大音量的值为："+maxVolume);
                             if(distancey>FLING_MIN_DISTANCE && Math.abs(distancey)>FLING_MIN_VELOCITY){
-                                Log.d("VOL","音量增大");
+                                //Log.d("VOL","音量增大");
                                 //am.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_RAISE,AudioManager.FLAG_SHOW_UI);
                                 setvolness(1f);
                             }
                             if(distancey<FLING_MIN_DISTANCE && Math.abs(distancey)>FLING_MIN_VELOCITY){
                                 //am.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_LOWER,AudioManager.FLAG_SHOW_UI);
-                                Log.d("VOL","音量减小");
+                                //Log.d("VOL","音量减小");
                                 setvolness(-1f);
                             }
                         }else{
                             //亮度调节
-                            Log.d("Touch","触摸左边部分");
+                            //Log.d("Touch","触摸左边部分");
                             final double fling_min_distance = 0.5;
                             final double fling_min_velocity = 0.5;
                             if (distancey > fling_min_distance && Math.abs(distancey) > fling_min_velocity) {
@@ -189,7 +190,7 @@ public class VIP_Acitivity extends AppCompatActivity {
     public void onBackPressed() {
         VIP_Acitivity.this.finish();
         Intent intent=new Intent(VIP_Acitivity.this,VipplayerAcitivity.class);
-        Log.d("VIP_A","准备返回VipplayerAcitivity");
+        //Log.d("VIP_A","准备返回VipplayerAcitivity");
         //intent.putExtra("Extra_url",youku_url);
         //Log.d("Main","准备传送到下一个Acitivity的URL为："+youku_url);
         startActivity(intent);
@@ -198,7 +199,7 @@ public class VIP_Acitivity extends AppCompatActivity {
    //页面初始化
     private void initView() {
         agentWebLL = findViewById(R.id.agentWeb_VIP);
-        Log.d("VIP","页面初始化");
+        //Log.d("VIP","页面初始化");
     }
 
   //设置屏幕亮度子函数 setbrightness();,0为最暗，1为最亮
@@ -214,7 +215,7 @@ public class VIP_Acitivity extends AppCompatActivity {
         getWindow().setAttributes(lp);
         float sb = lp.screenBrightness;
         //Log.d("Touch","屏幕亮度调节为："+(int) Math.ceil(sb * 100) + "%");
-        Log.d("Touch","sb的值为："+sb);
+        //Log.d("Touch","sb的值为："+sb);
         if(sb==1){
             Toast.makeText(VIP_Acitivity.this,"已经是最大亮度",Toast.LENGTH_SHORT).show();
         }
@@ -230,7 +231,7 @@ public class VIP_Acitivity extends AppCompatActivity {
         //取得最大音量
         assert mAudioManager != null;
         int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        Log.d("VOL_Test","最大音量值为："+maxVolume);
+        //Log.d("VOL_Test","最大音量值为："+maxVolume);
         //获得当前音量
         int mCurrentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
        // Log.d("VOL","当前音量值为："+mCurrentVolume);
@@ -242,7 +243,7 @@ public class VIP_Acitivity extends AppCompatActivity {
         else if(volume<=0){
             volume=0;
         }
-        Log.d("VOL_Test","将要设置为："+volume);
+        //Log.d("VOL_Test","将要设置为："+volume);
         //mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC,volness,AudioManager.FLAG_VIBRATE);
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC,volume,0);
        //提示当前音量值

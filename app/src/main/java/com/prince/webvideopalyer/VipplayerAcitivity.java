@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -18,11 +17,14 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.DefaultWebClient;
 import com.just.agentweb.WebChromeClient;
 import com.just.agentweb.WebViewClient;
+
 import java.util.Objects;
 
 public class VipplayerAcitivity extends AppCompatActivity {
@@ -107,13 +109,10 @@ public class VipplayerAcitivity extends AppCompatActivity {
                 SharedPreferences preferences = getSharedPreferences("config",MODE_PRIVATE);
                 //判断是否注册
                 boolean isRegister=preferences.getBoolean("isRegister",false);
-                //isRegister=true;  //测试用
-                Log.d("Register","注册标志为："+isRegister);
                 if (isRegister){
                 Intent intent=new Intent(VipplayerAcitivity.this,VIP_Acitivity.class);
                 intent.putExtra("Extra_Vip_start_id",url_start_id);
                 intent.putExtra("Extra_Vip_end",url_end);
-                //Log.d("Test","准备传送到下一个Acitivity的URL为："+url_vip);
                 startActivity(intent);}
                 else{
                     Toast.makeText(VipplayerAcitivity.this,"尚未注册，请先注册软件",Toast.LENGTH_SHORT).show();
@@ -142,7 +141,6 @@ public class VipplayerAcitivity extends AppCompatActivity {
     //初始化视窗函数initView();
     private void initView() {
         agentWebLL = findViewById(R.id.agentWeb);
-        Log.d("Vipplayer","页面初始化");
     }
 
     // 重新防止跳转其它浏览器
@@ -162,14 +160,11 @@ public class VipplayerAcitivity extends AppCompatActivity {
         // 可以去看上一级已经写了
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            Log.d("Test","获取到的新地址为："+request.getUrl());
-            //url_end = request.getUrl().toString();
             return super.shouldOverrideUrlLoading(view, request);
         }
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
-            Log.d("Test","当前打开的URL地址为："+url);
             url_end=url;
         }
     };
