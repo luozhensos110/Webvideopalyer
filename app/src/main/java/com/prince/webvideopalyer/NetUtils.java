@@ -4,21 +4,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 
-/**
- * Created by prince on 2018/6/22
- * 获取网络状态工具类
- */
+//获取网络状态工具类
 class NetUtils {
-
     static {
     }
 
-    /**
-     * 获取运营商名字
-     *
-     * @param context context
-     * @return int
-     */
+    //获取运营商名字
     static String getOperatorName(Context context) {
         /*
          * getSimOperatorName()就可以直接获取到运营商的名字
@@ -31,12 +22,7 @@ class NetUtils {
         return telephonyManager.getSimOperatorName();
     }
 
-    /**
-     * 判断网络是否连接
-     *
-     * @param context context
-     * @return true/false
-     */
+    //判断网络是否连接
     static boolean isNetConnected(Context context) {
         ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
@@ -48,12 +34,7 @@ class NetUtils {
         return false;
     }
 
-    /**
-     * 判断是否wifi连接
-     *
-     * @param context context
-     * @return true/false
-     */
+    //判断是否wifi连接
     static synchronized boolean isWifiConnected(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {

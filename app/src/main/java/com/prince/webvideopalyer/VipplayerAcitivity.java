@@ -27,7 +27,7 @@ import com.just.agentweb.WebChromeClient;
 import com.just.agentweb.WebViewClient;
 
 import java.util.Objects;
-
+//播放页面
 public class VipplayerAcitivity extends AppCompatActivity {
     private String url_start_id;    //声明变量用于存储选取的解析id
     private String url_end;         //声明变量用于存储需要解析的地址
@@ -114,8 +114,8 @@ public class VipplayerAcitivity extends AppCompatActivity {
                 boolean isRegister=preferences.getBoolean("isRegister",false);
                 if (isRegister){
                     url_end_qq=mAgentWeb.getWebCreator().getWebView().getUrl();
-                    //Log.d("URL","URL的最新值为"+url_end_qq);
-                    if(Extra_url.equals("http://m.v.qq.com")){
+                    Log.d("URL","URL的最新值为"+url_end_qq);
+                    if(Extra_url.equals("http://m.v.qq.com")||Extra_url.equals("https://www.iqiyi.com/")){
                         url_end=url_end_qq;
                     }
                     Intent intent=new Intent(VipplayerAcitivity.this,VIP_Acitivity.class);
@@ -168,19 +168,15 @@ public class VipplayerAcitivity extends AppCompatActivity {
         // 可以去看上一级已经写了
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            Log.d("URL"," request="+request);
+           // Log.d("URL"," request="+request);
             return super.shouldOverrideUrlLoading(view, request);
         }
-
+        //重载网页加载
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             url_end=url;
             Log.d("URL","新的URL为："+url_end);
-        }
-        @Override
-        public void onPageFinished(WebView view, String url) {
-            super.onPageFinished(view, url);
         }
     };
     }

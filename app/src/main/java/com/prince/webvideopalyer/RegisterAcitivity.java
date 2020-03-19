@@ -12,13 +12,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-
+//注册页面
 public class RegisterAcitivity extends AppCompatActivity {
     private EditText editText_pwd;                //定义控件
     private TextView textView_PhoneSn;            //定义控件

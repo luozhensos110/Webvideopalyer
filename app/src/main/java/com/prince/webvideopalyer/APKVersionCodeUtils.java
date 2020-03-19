@@ -2,7 +2,9 @@ package com.prince.webvideopalyer;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
+//获取版本信息类
 class APKVersionCodeUtils {
+
     // 获取当前本地apk的版本
     static int getVersionCode(Context mContext) {
         int versionCode = 0;

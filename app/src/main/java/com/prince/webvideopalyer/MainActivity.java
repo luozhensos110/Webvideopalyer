@@ -32,7 +32,7 @@ import java.net.URL;
 
 import static com.prince.webvideopalyer.AppManager.getAppManager;
 import static java.lang.System.exit;
-
+//首页
 public class MainActivity extends AppCompatActivity {
     private String aqy_url="https://www.iqiyi.com/";  //声明变量用于存储按钮对应的视频源
     private String txsp_url="http://m.v.qq.com";      //声明变量用于存储按钮对应的视频源

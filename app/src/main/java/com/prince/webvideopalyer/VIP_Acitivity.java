@@ -1,7 +1,5 @@
 package com.prince.webvideopalyer;
-/*
- *  VIP_PlayerUI;
- */
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +26,7 @@ import com.just.agentweb.WebChromeClient;
 import com.just.agentweb.WebViewClient;
 
 import java.util.Objects;
-
+//VIP播放页面
 public class VIP_Acitivity extends AppCompatActivity {
     private LinearLayout agentWebLL;//用来承载AgentWebView
     private String Vip_start;       //定义变量来存储选择解析接口地址

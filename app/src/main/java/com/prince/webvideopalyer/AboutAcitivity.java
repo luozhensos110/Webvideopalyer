@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-
+//关于页面
 public class AboutAcitivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     @Override

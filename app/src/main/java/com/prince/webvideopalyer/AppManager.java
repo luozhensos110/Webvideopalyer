@@ -4,11 +4,10 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import java.util.Stack;
-
+//App管理类
 public class AppManager {
     private static Stack<Activity> activityStack;
     private static AppManager instance;
-
     private AppManager(){}
 
     //单一实例

@@ -3,8 +3,10 @@ package com.prince.webvideopalyer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import static android.content.Context.MODE_PRIVATE;
-//用于存储数据,注册状态及更新地址
+//保存信息类
 class SavesInfo {
+
+    //保存更新地址
     static void  SaveUrl(Context context, String checkurl){
         //获取SharedPreferences对象
         SharedPreferences sharedPre=context.getSharedPreferences("config", MODE_PRIVATE);
@@ -16,6 +18,7 @@ class SavesInfo {
         editor.apply();
     }
 
+    //保存注册状态
     static void remAccount(Context context, Boolean iSrem){
         //获取SharedPreferences对象
         SharedPreferences sharedPre=context.getSharedPreferences("config", MODE_PRIVATE);
