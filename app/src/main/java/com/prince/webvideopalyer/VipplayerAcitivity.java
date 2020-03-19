@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -28,9 +29,11 @@ import com.just.agentweb.WebViewClient;
 import java.util.Objects;
 
 public class VipplayerAcitivity extends AppCompatActivity {
-    public String url_start_id;    //声明变量用于存储选取的解析id
-    public String url_end;         //声明变量用于存储需要解析的地址
+    private String url_start_id;    //声明变量用于存储选取的解析id
+    private String url_end;         //声明变量用于存储需要解析的地址
+    private String url_end_qq;      //声明变量用于存储需要解析的地址腾讯用
     private LinearLayout agentWebLL; //用来承载AgentWebView
+    private String Extra_url;        //声明变量用于存储选择的播放源
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +50,11 @@ public class VipplayerAcitivity extends AppCompatActivity {
         AppManager.getAppManager().addActivity(this);
        //接收Intent传递过来的数据
         final Intent intent = getIntent();
-        String Extra_url = intent.getStringExtra("Extra_url");
+        Extra_url = intent.getStringExtra("Extra_url");
         //初始化视窗
         initView();
         //初始化Agentweb
-        AgentWeb mAgentWeb = AgentWeb.with(this)
+        final AgentWeb mAgentWeb = AgentWeb.with(this)
                 .setAgentWebParent(agentWebLL, new LinearLayout.LayoutParams(-1, -1))
                 .useDefaultIndicator()
                 .setWebChromeClient(webChromeClient)
@@ -110,7 +113,12 @@ public class VipplayerAcitivity extends AppCompatActivity {
                 //判断是否注册
                 boolean isRegister=preferences.getBoolean("isRegister",false);
                 if (isRegister){
-                Intent intent=new Intent(VipplayerAcitivity.this,VIP_Acitivity.class);
+                    url_end_qq=mAgentWeb.getWebCreator().getWebView().getUrl();
+                    //Log.d("URL","URL的最新值为"+url_end_qq);
+                    if(Extra_url.equals("http://m.v.qq.com")){
+                        url_end=url_end_qq;
+                    }
+                    Intent intent=new Intent(VipplayerAcitivity.this,VIP_Acitivity.class);
                 intent.putExtra("Extra_Vip_start_id",url_start_id);
                 intent.putExtra("Extra_Vip_end",url_end);
                 startActivity(intent);}
@@ -160,12 +168,19 @@ public class VipplayerAcitivity extends AppCompatActivity {
         // 可以去看上一级已经写了
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            Log.d("URL"," request="+request);
             return super.shouldOverrideUrlLoading(view, request);
         }
+
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             url_end=url;
+            Log.d("URL","新的URL为："+url_end);
+        }
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
         }
     };
     }

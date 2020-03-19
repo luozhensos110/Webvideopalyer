@@ -35,7 +35,7 @@ import static java.lang.System.exit;
 
 public class MainActivity extends AppCompatActivity {
     private String aqy_url="https://www.iqiyi.com/";  //声明变量用于存储按钮对应的视频源
-    private String txsp_url="https://v.qq.com/";      //声明变量用于存储按钮对应的视频源
+    private String txsp_url="http://m.v.qq.com";      //声明变量用于存储按钮对应的视频源
     private String youku_url="https://www.youku.com/";//声明变量用于存储按钮对应的视频源
     private Integer newversioncode=1 ;                //声明变量用于存储从服务器端获取的versioncode，并赋予初值
     private String newdownloadurl;                    //声明变量用于存储从服务器端获取的newdownloadurl
