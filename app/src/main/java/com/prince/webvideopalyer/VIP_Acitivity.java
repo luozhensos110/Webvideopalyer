@@ -303,7 +303,7 @@ public class VIP_Acitivity extends AppCompatActivity {
                 select="https://vip.jlsprh.com/?url=";
                 break;
             case 6:
-                select="预留";
+                select="https://jx.sigujiexi.com/?url=";
                 break;
             case 7:
                 select="预留";
