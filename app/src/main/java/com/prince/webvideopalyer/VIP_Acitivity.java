@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
@@ -48,12 +49,20 @@ public class VIP_Acitivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).hide();
         //隐藏导航栏
         hideBottomUIMenu();
+        //获取系统亮度值初始化亮度
+        int light=getSystemBrightness();
+        //Log.d("亮度","获取到的亮度值为:"+light);
+        //设置亮度值
+        Window window = getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.screenBrightness = (light <= 0 ? 1 : light) / 255f;
+        window.setAttributes(lp);
+
         //加载Layout
         setContentView(R.layout.activity_vip_acitivity);
         AppManager.getAppManager().addActivity(this);
         //获取intent传递的数据
         Intent intent = getIntent();
-        //private TextView receiveTitle;//用于标题提示
         //定义变量来存储选择解析接口ID
         String vip_start_id = intent.getStringExtra("Extra_Vip_start_id");
         Vip_start = select_url_start(vip_start_id);
@@ -63,14 +72,10 @@ public class VIP_Acitivity extends AppCompatActivity {
         //完整地址拼接
         //定义变量来存储拼接好的地址
         String vip_url = Vip_start + vip_end;
-        //Log.d("Test","需要解析的地址为："+ vip_end);
-        //Log.d("Test","选择打开的视频源是："+ vip_url);
         //获取屏幕宽度
         width=getWidth();
         //获取屏幕高度
         height=getHeight();
-        //Log.d("Test","高度"+height);
-        //Log.d("Test","宽度"+width);
         //初始化视窗
         initView();
         AgentWeb mAgentWeb = AgentWeb.with(this)
@@ -122,12 +127,12 @@ public class VIP_Acitivity extends AppCompatActivity {
                             if(distancey>FLING_MIN_DISTANCE && Math.abs(distancey)>FLING_MIN_VELOCITY){
                                 //Log.d("VOL","音量增大");
                                 //am.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_RAISE,AudioManager.FLAG_SHOW_UI);
-                                setvolness(1f);
+                                setvolness(1.5f);
                             }
                             if(distancey<FLING_MIN_DISTANCE && Math.abs(distancey)>FLING_MIN_VELOCITY){
                                 //am.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_LOWER,AudioManager.FLAG_SHOW_UI);
                                 //Log.d("VOL","音量减小");
-                                setvolness(-1f);
+                                setvolness(-1.5f);
                             }
                         }else{
                             //亮度调节
@@ -135,10 +140,10 @@ public class VIP_Acitivity extends AppCompatActivity {
                             final double fling_min_distance = 0.5;
                             final double fling_min_velocity = 0.5;
                             if (distancey > fling_min_distance && Math.abs(distancey) > fling_min_velocity) {
-                                setbrightness(10);
+                                setbrightness(20);
                             }
                             if (distancey < fling_min_distance && Math.abs(distancey) > fling_min_velocity) {
-                                setbrightness(-10);
+                                setbrightness(-20);
                             }
                         }
                         break;
@@ -199,6 +204,17 @@ public class VIP_Acitivity extends AppCompatActivity {
         agentWebLL = findViewById(R.id.agentWeb_VIP);
         //Log.d("VIP","页面初始化");
     }
+
+    // 获得系统亮度
+     private int getSystemBrightness() {
+     int systemBrightness = 0;
+     try {
+           systemBrightness = Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+     } catch (Settings.SettingNotFoundException e) {
+         e.printStackTrace();
+     }
+     return systemBrightness;
+     }
 
   //设置屏幕亮度子函数 setbrightness();,0为最暗，1为最亮
     public void setbrightness(float brightness) {

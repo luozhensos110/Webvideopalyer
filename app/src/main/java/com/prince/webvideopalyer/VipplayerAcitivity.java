@@ -134,11 +134,11 @@ public class VipplayerAcitivity extends AppCompatActivity {
     @SuppressLint("ObsoleteSdkInt")
     protected void hideBottomUIMenu() {
         //隐藏虚拟按键，并且全屏
-        if (Build.VERSION.SDK_INT < 19) { // lower api
+        if (Build.VERSION.SDK_INT < 19) { // 低版本android系统
             View v = this.getWindow().getDecorView();
             v.setSystemUiVisibility(View.GONE);
         } else {
-            //for new api versions.
+            //高版本android系统
             View decorView = getWindow().getDecorView();
             int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
