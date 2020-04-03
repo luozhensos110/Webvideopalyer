@@ -121,18 +121,19 @@ public class VIP_Acitivity extends AppCompatActivity {
                             //Log.d("Touch","触摸右边部分");
                             final double FLING_MIN_DISTANCE = 0.5;
                             final double FLING_MIN_VELOCITY = 0.5;
-                            //AudioManager am=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
-                            //int maxVolume=am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                            AudioManager am=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
+                            assert am != null;
+                            int maxVolume=am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
                             //Log.d("VOL","最大音量的值为："+maxVolume);
                             if(distancey>FLING_MIN_DISTANCE && Math.abs(distancey)>FLING_MIN_VELOCITY){
                                 //Log.d("VOL","音量增大");
-                                //am.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_RAISE,AudioManager.FLAG_SHOW_UI);
-                                setvolness(1.5f);
+                                am.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_RAISE,AudioManager.FLAG_SHOW_UI);
+                                //setvolness(1.5f);
                             }
                             if(distancey<FLING_MIN_DISTANCE && Math.abs(distancey)>FLING_MIN_VELOCITY){
-                                //am.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_LOWER,AudioManager.FLAG_SHOW_UI);
+                                am.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_LOWER,AudioManager.FLAG_SHOW_UI);
                                 //Log.d("VOL","音量减小");
-                                setvolness(-1.5f);
+                                //setvolness(-1.5f);
                             }
                         }else{
                             //亮度调节
