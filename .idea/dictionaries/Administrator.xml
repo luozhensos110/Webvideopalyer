@@ -9,6 +9,7 @@
       <w>checkupdate</w>
       <w>checkurl</w>
       <w>clipdata</w>
+      <w>codestart</w>
       <w>distancex</w>
       <w>distancey</w>
       <w>downloadurl</w>
@@ -16,7 +17,9 @@
       <w>getphonesn</w>
       <w>imei</w>
       <w>imsi</w>
+      <w>iscode</w>
       <w>ivback</w>
+      <w>miui</w>
       <w>natapp</w>
       <w>newdownloadurl</w>
       <w>newinfo</w>
@@ -25,6 +28,9 @@
       <w>newversionname</w>
       <w>notwifi</w>
       <w>phonesn</w>
+      <w>powermanager</w>
+      <w>sback</w>
+      <w>scode</w>
       <w>serverurl</w>
       <w>setbrightness</w>
       <w>setvolness</w>
@@ -37,7 +43,9 @@
       <w>vipplayer</w>
       <w>volness</w>
       <w>webvideopalyer</w>
+      <w>webvideoplayer</w>
       <w>webview</w>
+      <w>xiaomi</w>
       <w>youku</w>
     </words>
   </dictionary>

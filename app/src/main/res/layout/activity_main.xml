@@ -66,6 +66,38 @@
                 android:scaleType="fitXY"
                 app:srcCompat="@mipmap/youku"
                 tools:ignore="ContentDescription" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp">
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="203dp"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="237dp"
+                    android:layout_height="match_parent">
+
+                </FrameLayout>
+
+                <Switch
+                    android:id="@+id/switch_codestart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:minWidth="20dp"
+                    android:showText="false"
+                    android:switchPadding="10dp"
+                    android:text="暗码启动"
+                    android:textOff="关闭"
+                    android:textOn="启用" />
+            </LinearLayout>
+
         </LinearLayout>
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

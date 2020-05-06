@@ -2,6 +2,7 @@ package com.prince.webvideopalyer;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,12 +11,16 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public  String Urlpath="";                        //声明变量用于存储服务端配置文件路径,正式版为固定值
     private static final int TIME_EXIT=2000;          //声明变量用于两次退出判断
     private long mBackPressed;                         //声明变量用于两次退出判断，记录按键时间
+    public Boolean iSback=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +64,55 @@ public class MainActivity extends AppCompatActivity {
         ImageButton btn_aqy = findViewById(R.id.imgBtn_aqy);
         ImageButton btn_txsp= findViewById(R.id.imgBtn_txsp);
         ImageButton btn_youku= findViewById(R.id.imgBtn_youku);
+        Switch switch_code_start=findViewById(R.id.switch_codestart);
+        //实例化获取SharedPreferences
+        SharedPreferences sharedPre=getSharedPreferences("config", MODE_PRIVATE);
+        //检查当前键是否存在
+        boolean isContains=sharedPre.contains("isCode_start");
+        boolean iScode_start=false;
+        if(isContains){
+        iScode_start=sharedPre.getBoolean("isCode_start",false);
+        }else{
+            Log.d("MIUI","当前键值不存在!");
+        }
+        //根据获取值和当前系统权限调整switch
+        if(MiuiUtils.isMIUI()&&!MiuiUtils.canBackgroundStart(MainActivity.this)){
+            switch_code_start.setChecked(false);
+            SavesInfo.remIscode_start(MainActivity.this,false);
+        }else{
+        switch_code_start.setChecked(iScode_start);
+        }
+        //获取服务类实例化
+        final ComponentName name = new ComponentName(this, SecretCodeReceiver.class);
+        final PackageManager pm = getPackageManager();
+        //获取传递值，用于判断是否暗码启动
+        Intent intent = getIntent();
+        boolean is_CODE_start=intent.getBooleanExtra("iScode_start",false);
+        if(iScode_start){
+            if(is_CODE_start){
+            Log.d("暗码启动","暗码启动打开并且暗码启动");
+            }else{
+                final EditText et = new EditText(this);
+                new AlertDialog.Builder(this).setTitle("暗码启动")
+                        .setMessage("请输入启动暗码")
+                        .setIcon(R.mipmap.permissions)
+                        .setView(et)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //按下确定键后的事件
+                                Toast.makeText(MainActivity.this,"暗码启动成功",Toast.LENGTH_LONG).show();
+                                //Toast.makeText(getApplicationContext(), et.getText().toString(),Toast.LENGTH_LONG).show();
+                            }
+                        });
+            }
+        }else{
+            Log.d("暗码启动","暗码启动未打开");
+        }
+
         new MyXmlTask().execute();
+        //初始化设置服务自启动
+        set_init();
         //检测当前是否有网络连接
         boolean isNetConnected = NetUtils.isNetConnected(MainActivity.this);
         //判断当前网络是否是WIFI
@@ -98,6 +152,39 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("Extra_url",youku_url);
                 //Log.d("Main","准备传送到下一个Acitivity的URL为："+youku_url);
                 startActivity(intent);
+            }
+        });
+       //switch事件监听
+        switch_code_start.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    SavesInfo.remIscode_start(MainActivity.this,true);
+                    boolean is=MiuiUtils.canBackgroundStart(MainActivity.this);
+                    //判断是否小米
+                    if(MiuiUtils.isMIUI()){
+                        //判断是否授权
+                        if(MiuiUtils.canBackgroundStart(MainActivity.this)){
+                            //保存switch状态
+                            SavesInfo.remIscode_start(MainActivity.this,true);
+                            //启用用一个广播（暗码启动）
+                            pm.setComponentEnabledSetting(name, PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                                    PackageManager.DONT_KILL_APP);
+                            //隐藏桌面图标
+                        }else{
+                            permissions_dialog();
+                        }
+                    }
+                }else{
+                    //保存switch状态
+                    SavesInfo.remIscode_start(MainActivity.this,false);
+                    // 禁用一个广播（暗码启动）
+                    pm.setComponentEnabledSetting(name, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                            PackageManager.DONT_KILL_APP);
+                    Toast.makeText(MainActivity.this,"暗码启动关闭",Toast.LENGTH_SHORT).show();
+                    //显示桌面图标
+
+                }
             }
         });
     }
@@ -385,6 +472,95 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    //根据OEM厂商调整实现后台运行暗码
+    public  void set_init(){
+        /**
+         * 针对特殊厂商设置自启动项，否则应用关闭广播接收器关闭导致后台不会接收到暗码
+         */
+        final Intent[] POWERMANAGER_INTENTS = {
+                new Intent().setComponent(new ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")),
+                new Intent().setComponent(new ComponentName("com.letv.android.letvsafe", "com.letv.android.letvsafe.AutobootManageActivity")),
+                new Intent().setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.optimize.process.ProtectActivity")),
+                new Intent().setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.appcontrol.activity.StartupAppControlActivity")),
+                new Intent().setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity")),
+                new Intent().setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.safecenter.startupapp.StartupAppListActivity")),
+                new Intent().setComponent(new ComponentName("com.oppo.safe", "com.oppo.safe.permission.startup.StartupAppListActivity")),
+                new Intent().setComponent(new ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity")),
+                new Intent().setComponent(new ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.BgStartUpManager")),
+                new Intent().setComponent(new ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity")),
+                new Intent().setComponent(new ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BatteryActivity")),
+                new Intent().setComponent(new ComponentName("com.htc.pitroad", "com.htc.pitroad.landingpage.activity.LandingPageActivity")),
+                new Intent().setComponent(new ComponentName("com.asus.mobilemanager", "com.asus.mobilemanager.MainActivity"))};
+        final SharedPreferences.Editor pref = getSharedPreferences("allow_notify", MODE_PRIVATE).edit();
+        pref.apply();
+        final SharedPreferences sp = getSharedPreferences("allow_notify", MODE_PRIVATE);
+
+        if (!sp.getBoolean("protected", false)) {
+            for (final Intent intent : POWERMANAGER_INTENTS)
+                if (getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null) {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("暗码启动权限").setMessage("请开启自启动权限")
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    startActivity(intent);
+                                    sp.edit().putBoolean("protected", true).apply();
+                                }
+                            })
+                            .setCancelable(false)
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    iSback=false;
+                                }
+                            })
+                            .create().show();
+                    break;
+                }
+        }
+
+    }
+
+    //提示用户授权允许后台弹出界面
+    public  void  permissions_dialog(){
+        AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();//创建对话框
+        final AlertDialog isNot_permissions=new AlertDialog.Builder(MainActivity.this).create();//创建提示手动授权
+        isNot_permissions.setIcon(R.mipmap.permissions);
+        isNot_permissions.setTitle("权限设置");
+        isNot_permissions.setMessage("小米手机，请手动授权允许后台弹出界面!\n暗码为：*#*#2305#*#*");
+        isNot_permissions.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                isNot_permissions.dismiss();
+                try{
+                    //MIUI8
+                    Intent localIntent = new Intent("miui.intent.action.APP_PERM_EDITOR");
+                    localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
+                    localIntent.putExtra("extra_pkgname", MainActivity.this.getPackageName());
+                    startActivity(localIntent);
+                }catch (Exception e){
+                    try{
+                        // MIUI 5/6/7
+                        Intent localIntent = new Intent("miui.intent.action.APP_PERM_EDITOR");
+                        localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity");
+                        localIntent.putExtra("extra_pkgname", MainActivity.this.getPackageName());
+                        startActivity(localIntent);
+
+                    }catch(Exception e1){
+                        // 否则跳转到应用详情
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", MainActivity.this.getPackageName(), null);
+                        intent.setData(uri);
+                        startActivity(intent);
+                    }
+                }
+            }
+        });
+        //窗口显示
+        isNot_permissions.show();
     }
 
 }
