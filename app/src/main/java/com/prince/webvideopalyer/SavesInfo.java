@@ -17,7 +17,6 @@ class SavesInfo {
         //提交
         editor.apply();
     }
-
     //保存注册状态
     static void remAccount(Context context, Boolean iSrem){
         //获取SharedPreferences对象
@@ -29,7 +28,7 @@ class SavesInfo {
         //提交
         editor.apply();
     }
-    //保存注册状态
+    //保存暗码启动开关状态
     static void remIscode_start(Context context, Boolean iScode_start){
         //获取SharedPreferences对象
         SharedPreferences sharedPre=context.getSharedPreferences("config", MODE_PRIVATE);
@@ -37,6 +36,17 @@ class SavesInfo {
         SharedPreferences.Editor editor=sharedPre.edit();
         //设置参数
         editor.putBoolean("isCode_start", iScode_start);
+        //提交
+        editor.apply();
+    }
+    //保存启动密码
+    static void  SaveCode(Context context, String startcode){
+        //获取SharedPreferences对象
+        SharedPreferences sharedPre=context.getSharedPreferences("config", MODE_PRIVATE);
+        //获取Editor对象
+        SharedPreferences.Editor editor=sharedPre.edit();
+        //设置参数
+        editor.putString("StartCode", startcode);
         //提交
         editor.apply();
     }

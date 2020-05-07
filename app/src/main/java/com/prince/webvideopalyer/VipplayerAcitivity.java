@@ -115,13 +115,13 @@ public class VipplayerAcitivity extends AppCompatActivity {
                 if (isRegister){
                     url_end_qq=mAgentWeb.getWebCreator().getWebView().getUrl();
                     Log.d("URL","URL的最新值为"+url_end_qq);
-                    if(Extra_url.equals("http://m.v.qq.com")||Extra_url.equals("https://www.iqiyi.com/")){
+                    if(Extra_url.equals("http://m.v.qq.com")||Extra_url.equals("https://www.iqiyi.com/")||Extra_url.equals("https://www.mgtv.com/")){
                         url_end=url_end_qq;
                     }
                     Intent intent=new Intent(VipplayerAcitivity.this,VIP_Acitivity.class);
-                intent.putExtra("Extra_Vip_start_id",url_start_id);
-                intent.putExtra("Extra_Vip_end",url_end);
-                startActivity(intent);}
+                    intent.putExtra("Extra_Vip_start_id",url_start_id);
+                    intent.putExtra("Extra_Vip_end",url_end);
+                    startActivity(intent);}
                 else{
                     Toast.makeText(VipplayerAcitivity.this,"尚未注册，请先注册软件",Toast.LENGTH_SHORT).show();
                     Intent intent_register=new Intent(VipplayerAcitivity.this,RegisterAcitivity.class);

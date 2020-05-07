@@ -22,19 +22,15 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import static com.prince.webvideopalyer.AppManager.getAppManager;
 import static java.lang.System.exit;
 //首页
@@ -42,13 +38,16 @@ public class MainActivity extends AppCompatActivity {
     private String aqy_url="https://www.iqiyi.com/";  //声明变量用于存储按钮对应的视频源
     private String txsp_url="http://m.v.qq.com";      //声明变量用于存储按钮对应的视频源
     private String youku_url="https://www.youku.com/";//声明变量用于存储按钮对应的视频源
+    private String mgtv_url="https://www.mgtv.com/";  //声明变量用于存储按钮对应的视频源
     private Integer newversioncode=1 ;                //声明变量用于存储从服务器端获取的versioncode，并赋予初值
     private String newdownloadurl;                    //声明变量用于存储从服务器端获取的newdownloadurl
     private String newinfo;                           //声明变量用于存储从服务器端获取的newinfo
     public  String Urlpath="";                        //声明变量用于存储服务端配置文件路径,正式版为固定值
     private static final int TIME_EXIT=2000;          //声明变量用于两次退出判断
-    private long mBackPressed;                         //声明变量用于两次退出判断，记录按键时间
-    public Boolean iSback=true;
+    private long mBackPressed;                        //声明变量用于两次退出判断，记录按键时间
+    public Boolean iSback=true;                       //声明变量用于两次退出判断，是否退出
+    public  Boolean codeisContains=false;             //声明变量用于判断是否存在启动密码，默认无
+    public  String startcode="";                      //声明变量用于存储启动密码，默认无
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,16 +63,26 @@ public class MainActivity extends AppCompatActivity {
         ImageButton btn_aqy = findViewById(R.id.imgBtn_aqy);
         ImageButton btn_txsp= findViewById(R.id.imgBtn_txsp);
         ImageButton btn_youku= findViewById(R.id.imgBtn_youku);
+        ImageButton btn_mgtv=findViewById(R.id.imgBtn_mgtv);
         Switch switch_code_start=findViewById(R.id.switch_codestart);
         //实例化获取SharedPreferences
         SharedPreferences sharedPre=getSharedPreferences("config", MODE_PRIVATE);
-        //检查当前键是否存在
+        //检查暗码启动状态键是否存在
         boolean isContains=sharedPre.contains("isCode_start");
+        //检查启动密码键是否存在
+        codeisContains=sharedPre.contains("StartCode");
+        //设置启动状态默认值
         boolean iScode_start=false;
+        if(codeisContains){
+            //获取启动密码
+            startcode=sharedPre.getString("StartCode","");
+        }
+        //根据设定保存值改变状态
         if(isContains){
+        //获取暗码启动状态
         iScode_start=sharedPre.getBoolean("isCode_start",false);
         }else{
-            Log.d("MIUI","当前键值不存在!");
+            Log.d("暗码启动","当前键值不存在!");
         }
         //根据获取值和当前系统权限调整switch
         if(MiuiUtils.isMIUI()&&!MiuiUtils.canBackgroundStart(MainActivity.this)){
@@ -92,19 +101,19 @@ public class MainActivity extends AppCompatActivity {
             if(is_CODE_start){
             Log.d("暗码启动","暗码启动打开并且暗码启动");
             }else{
-                final EditText et = new EditText(this);
-                new AlertDialog.Builder(this).setTitle("暗码启动")
-                        .setMessage("请输入启动暗码")
-                        .setIcon(R.mipmap.permissions)
-                        .setView(et)
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //按下确定键后的事件
-                                Toast.makeText(MainActivity.this,"暗码启动成功",Toast.LENGTH_LONG).show();
-                                //Toast.makeText(getApplicationContext(), et.getText().toString(),Toast.LENGTH_LONG).show();
-                            }
-                        });
+              /*  final EditText inputServer = new EditText(this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("请输入启动密码").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)
+                        .setNegativeButton("Cancel", null);
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        inputServer.getText().toString();
+                    }
+                });
+                builder.show();*/
+               isNotCodeStart();
+                Log.d("暗码启动","暗码启动打开桌面启动");
             }
         }else{
             Log.d("暗码启动","暗码启动未打开");
@@ -154,7 +163,17 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-       //switch事件监听
+        //按钮4监听
+        btn_mgtv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,VipplayerAcitivity.class);
+                intent.putExtra("Extra_url",mgtv_url);
+                //Log.d("Main","准备传送到下一个Acitivity的URL为："+mgtv_url);
+                startActivity(intent);
+            }
+        });
+              //switch事件监听
         switch_code_start.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -398,31 +417,39 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.Contact_us:
                 //Log.d("MENU","点击的是联系我们菜单");
-                // 必须明确使用mailto前缀来修饰邮件地址,如果使用,intent.putExtra(Intent.EXTRA_EMAIL, email)，结果将匹配不到任何应用
-                Uri uri = Uri.parse("mailto:297006042@qq.com");
-                String[] email = {"297006042@qq.com"};
-                Intent intent_Contact = new Intent(Intent.ACTION_SENDTO, uri);
-                // 抄送人
-                intent_Contact.putExtra(Intent.EXTRA_CC, email);
-                // 主题
-                intent_Contact.putExtra(Intent.EXTRA_SUBJECT, "关于WebVideoPlayer");
-                // 正文
-                intent_Contact.putExtra(Intent.EXTRA_TEXT, "");
-                //选择邮件类应用界面,用户可能有多个邮箱应用
-                startActivity(Intent.createChooser(intent_Contact, "请选择邮件类应用"));
+                Contact_us();
                 break;
                 //选择更新服务器地址按钮
             case R.id.Server_url:
                 //手动添加更新地址的方法调用
                 setCheckUpdate();
                 break;
+            case R.id.Start_code:
+                //修改启动密码的方法调用
+                setStartcode();
+                break;
             default:
         }
         return true;
     }
+    //联系我们的方法
+    private void Contact_us(){
+        // 必须明确使用mailto前缀来修饰邮件地址,如果使用,intent.putExtra(Intent.EXTRA_EMAIL, email)，结果将匹配不到任何应用
+        Uri uri = Uri.parse("mailto:297006042@qq.com");
+        String[] email = {"297006042@qq.com"};
+        Intent intent_Contact = new Intent(Intent.ACTION_SENDTO, uri);
+        // 抄送人
+        intent_Contact.putExtra(Intent.EXTRA_CC, email);
+        // 主题
+        intent_Contact.putExtra(Intent.EXTRA_SUBJECT, "关于WebVideoPlayer");
+        // 正文
+        intent_Contact.putExtra(Intent.EXTRA_TEXT, "");
+        //选择邮件类应用界面,用户可能有多个邮箱应用
+        startActivity(Intent.createChooser(intent_Contact, "请选择邮件类应用"));
+    }
 
     //手动添加更新地址的方法,(测试用,正式版此地址固定，不用手动输入)
-    public  void setCheckUpdate(){
+    private void setCheckUpdate(){
     final EditText inputServer = new EditText(this);
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("请输入地址").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)
@@ -439,45 +466,84 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
-    //两次返回退出应用
-    @Override
-    public void onBackPressed(){
-        if(mBackPressed+TIME_EXIT>System.currentTimeMillis()){
-            //super.onBackPressed();
-            getAppManager().finishAllActivity();
-            getAppManager().AppExit(this);
-            exit(0);
+    //手动设置启动密码的方法
+    private void setStartcode(){
+        if(!codeisContains){
+            Toast.makeText(MainActivity.this,"初次使用，请设置启动密码",Toast.LENGTH_SHORT).show();
+            final EditText inputServer = new EditText(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("启动密码设置").setMessage("初次设置，设置桌面启动密码!").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer);
+            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                        SavesInfo.SaveCode(MainActivity.this,inputServer.getText().toString());
+                        Toast.makeText(MainActivity.this,"设置密码为："+ inputServer.getText().toString(),Toast.LENGTH_SHORT).show();
+                }
+            });
+            builder.show();
         }else{
-            Toast.makeText(this,"再点击一次返回退出程序",Toast.LENGTH_SHORT).show();
-            mBackPressed=System.currentTimeMillis();
+            final EditText old_startcode = new EditText(this);
+            final EditText new_startcode = new EditText(this);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("启动密码修改").setMessage("请输入旧密码").setIcon(android.R.drawable.ic_dialog_info).setView(old_startcode);
+            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    //判断输入旧密码是否正确
+                    if(old_startcode.getText().toString().equals(startcode)){
+                    builder.setMessage("请输入新密码").setIcon(android.R.drawable.ic_dialog_info).setView(new_startcode);
+                    builder.setPositiveButton("修改密码", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            SavesInfo.SaveCode(MainActivity.this,new_startcode.getText().toString());
+                            Toast.makeText(MainActivity.this,"设置密码为："+ new_startcode.getText().toString(),Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    builder.show();
+                    }else{
+                        Toast.makeText(MainActivity.this,"密码输入错误,请重新输入!",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            builder.show();
         }
     }
 
-    //对获取权限处理的结果
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 1) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //检验是否获取权限，如果获取权限，外部存储会处于开放状态，会弹出一个toast提示获得授权
-                //String sdCard = Environment.getExternalStorageState();
-                Toast.makeText(this,"获得授权",Toast.LENGTH_LONG).show();
-            } else {
-                //开启线并提示
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "未获取授权，请手动授权！", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+    //暗码启动桌面启动提示框
+    private void isNotCodeStart(){
+        if(!codeisContains){
+            Toast.makeText(MainActivity.this,"初次使用，请设置启动密码",Toast.LENGTH_SHORT).show();
         }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        final EditText inputServer = new EditText(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("暗码启动").setMessage("设置为暗码启动，桌面启动需输入启动密码!").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer).setCancelable(false);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d("暗码启动","暗码启动密码验证");
+                if(codeisContains){
+                    Log.d("暗码启动","暗码启动密码验证,密码存在");
+                    if(inputServer.getText().toString().equals(startcode)){
+                        //Log.d("暗码启动","启动密码密码输入正确!");
+                        Toast.makeText(MainActivity.this,"密码正确!",Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(MainActivity.this,"密码错误，软件自动关闭!",Toast.LENGTH_LONG).show();
+                       AppManager.getAppManager().finishAllActivity();
+                       AppManager.getAppManager().AppExit(MainActivity.this);
+                    }
+                }else{
+                    //inputServer.getText().toString();
+                    SavesInfo.SaveCode(MainActivity.this,inputServer.getText().toString());
+                    Toast.makeText(MainActivity.this,"设置密码为："+ inputServer.getText().toString(),Toast.LENGTH_SHORT).show();
+                    //Log.d("暗码启动","启动密码不存在，设置并保存");
+                }
+
+            }
+        });
+        builder.show();
     }
 
     //根据OEM厂商调整实现后台运行暗码
-    public  void set_init(){
-        /**
-         * 针对特殊厂商设置自启动项，否则应用关闭广播接收器关闭导致后台不会接收到暗码
+    private void set_init(){
+        /*
+          针对特殊厂商设置自启动项，否则应用关闭广播接收器关闭导致后台不会接收到暗码
          */
         final Intent[] POWERMANAGER_INTENTS = {
                 new Intent().setComponent(new ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")),
@@ -525,7 +591,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //提示用户授权允许后台弹出界面
-    public  void  permissions_dialog(){
+    private void  permissions_dialog(){
         AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();//创建对话框
         final AlertDialog isNot_permissions=new AlertDialog.Builder(MainActivity.this).create();//创建提示手动授权
         isNot_permissions.setIcon(R.mipmap.permissions);
@@ -562,5 +628,42 @@ public class MainActivity extends AppCompatActivity {
         //窗口显示
         isNot_permissions.show();
     }
+
+    //两次返回退出应用
+    @Override
+    public void onBackPressed(){
+        if(mBackPressed+TIME_EXIT>System.currentTimeMillis()){
+            //super.onBackPressed();
+            getAppManager().finishAllActivity();
+            getAppManager().AppExit(this);
+            exit(0);
+        }else{
+            Toast.makeText(this,"再点击一次返回退出程序",Toast.LENGTH_SHORT).show();
+            mBackPressed=System.currentTimeMillis();
+        }
+    }
+
+    //对获取权限处理的结果
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //检验是否获取权限，如果获取权限，外部存储会处于开放状态，会弹出一个toast提示获得授权
+                //String sdCard = Environment.getExternalStorageState();
+                Toast.makeText(this,"获得授权",Toast.LENGTH_LONG).show();
+            } else {
+                //开启线并提示
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "未获取授权，请手动授权！", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+
 
 }

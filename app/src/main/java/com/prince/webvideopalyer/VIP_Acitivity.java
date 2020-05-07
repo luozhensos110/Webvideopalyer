@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -91,6 +92,7 @@ public class VIP_Acitivity extends AppCompatActivity {
                 .createAgentWeb()
                 .ready()
                 .go(vip_url);
+        Log.d("VIP_test","打开的地址为："+vip_url);
         //设置请求头,可以屏蔽部分根据请求头判断类型的JS广告
         mAgentWeb.getAgentWebSettings().getWebSettings().setUserAgentString("agentweb");
         //定义Webview
@@ -311,10 +313,10 @@ public class VIP_Acitivity extends AppCompatActivity {
                 select="https://jx.618g.com/?url=";
                 break;
             case 3:
-                select="https://api.2020jx.com/?url=";
+                select="https://api.653520.top/vip/?url=";
                 break;
             case 4:
-                select="https://jx.wslmf.com/?url=";
+                select="https://jx.ab33.top/vip/?url=";
                 break;
             case 5:
                 select="https://vip.jlsprh.com/?url=";

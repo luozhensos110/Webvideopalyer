@@ -13,4 +13,7 @@
     <item
         android:id="@+id/Server_url"
         android:title="@string/serverurl"/>
+    <item
+        android:id="@+id/Start_code"
+        android:title="@string/start_code_set"/>
 </menu>

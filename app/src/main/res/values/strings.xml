@@ -31,4 +31,8 @@
     <string name="input_regNum">请输入注册码</string>
     <string name="Phone_sn">手机序列号</string>
     <string name="register_pic">Register页面图片</string>
+    <string name="start_code">暗码启动</string>
+    <string name="off">关闭</string>
+    <string name="on">启用</string>
+    <string name="start_code_set">启动暗码设置</string>
 </resources>

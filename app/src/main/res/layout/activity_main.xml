@@ -67,20 +67,30 @@
                 app:srcCompat="@mipmap/youku"
                 tools:ignore="ContentDescription" />
 
+            <ImageButton
+                android:id="@+id/imgBtn_mgtv"
+                android:layout_width="match_parent"
+                android:layout_height="67dp"
+                android:scaleType="fitXY"
+                app:srcCompat="@mipmap/mgtv"
+                tools:ignore="ContentDescription" />
+
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="80dp">
+                android:layout_height="80dp"
+                tools:ignore="UselessLeaf">
 
             </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="203dp"
+                android:layout_height="108dp"
                 android:orientation="horizontal">
 
                 <FrameLayout
                     android:layout_width="237dp"
-                    android:layout_height="match_parent">
+                    android:layout_height="116dp"
+                    tools:ignore="UselessLeaf">
 
                 </FrameLayout>
 
@@ -93,9 +103,10 @@
                     android:minWidth="20dp"
                     android:showText="false"
                     android:switchPadding="10dp"
-                    android:text="暗码启动"
-                    android:textOff="关闭"
-                    android:textOn="启用" />
+                    android:text="@string/start_code"
+                    android:textOff="@string/off"
+                    android:textOn="@string/on"
+                    tools:ignore="InefficientWeight" />
             </LinearLayout>
 
         </LinearLayout>

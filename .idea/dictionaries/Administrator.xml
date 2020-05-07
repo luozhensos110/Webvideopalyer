@@ -9,6 +9,7 @@
       <w>checkupdate</w>
       <w>checkurl</w>
       <w>clipdata</w>
+      <w>codeis</w>
       <w>codestart</w>
       <w>distancex</w>
       <w>distancey</w>
@@ -19,6 +20,7 @@
       <w>imsi</w>
       <w>iscode</w>
       <w>ivback</w>
+      <w>mgtv</w>
       <w>miui</w>
       <w>natapp</w>
       <w>newdownloadurl</w>
@@ -34,6 +36,7 @@
       <w>serverurl</w>
       <w>setbrightness</w>
       <w>setvolness</w>
+      <w>startcode</w>
       <w>theversion</w>
       <w>tiankong</w>
       <w>txsp</w>
