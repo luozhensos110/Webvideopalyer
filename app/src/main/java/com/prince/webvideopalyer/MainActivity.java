@@ -1,5 +1,6 @@
 package com.prince.webvideopalyer;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -10,6 +11,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -21,33 +23,45 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import static com.prince.webvideopalyer.AppManager.getAppManager;
 import static java.lang.System.exit;
 //首页
 public class MainActivity extends AppCompatActivity {
-    private String aqy_url="https://www.iqiyi.com/";  //声明变量用于存储按钮对应的视频源
-    private String txsp_url="http://m.v.qq.com";      //声明变量用于存储按钮对应的视频源
-    private String youku_url="https://www.youku.com/";//声明变量用于存储按钮对应的视频源
-    private String mgtv_url="https://www.mgtv.com/";  //声明变量用于存储按钮对应的视频源
-    private Integer newversioncode=1 ;                //声明变量用于存储从服务器端获取的versioncode，并赋予初值
-    private String newdownloadurl;                    //声明变量用于存储从服务器端获取的newdownloadurl
-    private String newinfo;                           //声明变量用于存储从服务器端获取的newinfo
-    public  String Urlpath="";                        //声明变量用于存储服务端配置文件路径,正式版为固定值
+    private String sources_IQIYI="https://www.iqiyi.com/";  //声明变量用于存储按钮对应的视频源
+    private String sources_Tencent="http://m.v.qq.com";      //声明变量用于存储按钮对应的视频源
+    private String sources_Youku="https://www.youku.com/";//声明变量用于存储按钮对应的视频源
+    private String sources_Mango="https://www.mgtv.com/";  //声明变量用于存储按钮对应的视频源
+    private Integer newVersionCode=1 ;                //声明变量用于存储从服务器端获取的versioncode，并赋予初值
+    private String newDownloadUrl;                    //声明变量用于存储从服务器端获取的newDownloadUrl
+    private String newInfo;                           //声明变量用于存储从服务器端获取的newInfo
+    public  String urlPath="";                        //声明变量用于存储服务端配置文件路径,正式版为固定值
     private static final int TIME_EXIT=2000;          //声明变量用于两次退出判断
     private long mBackPressed;                        //声明变量用于两次退出判断，记录按键时间
     public Boolean iSback=true;                       //声明变量用于两次退出判断，是否退出
-    public  Boolean codeisContains=false;             //声明变量用于判断是否存在启动密码，默认无
-    public  String startcode="";                      //声明变量用于存储启动密码，默认无
+    public  Boolean codeIsContains=false;             //声明变量用于判断是否存在启动密码，默认无
+    public  String startCode="";                      //声明变量用于存储启动密码，默认无
+    private TextView text_Location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,22 +74,33 @@ public class MainActivity extends AppCompatActivity {
         getAppManager().addActivity(this);
         PermissionUtils.isGrantExternalRW(this, 1);
         //实例化图片按钮对象
-        ImageButton btn_aqy = findViewById(R.id.imgBtn_aqy);
-        ImageButton btn_txsp= findViewById(R.id.imgBtn_txsp);
-        ImageButton btn_youku= findViewById(R.id.imgBtn_youku);
-        ImageButton btn_mgtv=findViewById(R.id.imgBtn_mgtv);
-        Switch switch_code_start=findViewById(R.id.switch_codestart);
+        ImageButton btn_IQIYI = findViewById(R.id.imgbtn_IQIYI);
+        ImageButton btn_Tencent= findViewById(R.id.imgbtn_Tencent);
+        ImageButton btn_Youku= findViewById(R.id.imgbtn_Youku);
+        ImageButton btn_Mango=findViewById(R.id.imgbtn_Mango);
+        Switch switch_CodeStart=findViewById(R.id.switch_codestart);
+        //实例化地址显示
+       text_Location=findViewById(R.id.textView_location);
+        //获取地址信息，用于授权
+        location();
+        //地址信息点击事件
+        text_Location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restart_location();
+            }
+        });
         //实例化获取SharedPreferences
         SharedPreferences sharedPre=getSharedPreferences("config", MODE_PRIVATE);
         //检查暗码启动状态键是否存在
         boolean isContains=sharedPre.contains("isCode_start");
         //检查启动密码键是否存在
-        codeisContains=sharedPre.contains("StartCode");
+        codeIsContains=sharedPre.contains("startCode");
         //设置启动状态默认值
         boolean iScode_start=false;
-        if(codeisContains){
+        if(codeIsContains){
             //获取启动密码
-            startcode=sharedPre.getString("StartCode","");
+            startCode=sharedPre.getString("startCode","");
         }
         //根据设定保存值改变状态
         if(isContains){
@@ -86,10 +111,10 @@ public class MainActivity extends AppCompatActivity {
         }
         //根据获取值和当前系统权限调整switch
         if(MiuiUtils.isMIUI()&&!MiuiUtils.canBackgroundStart(MainActivity.this)){
-            switch_code_start.setChecked(false);
+            switch_CodeStart.setChecked(false);
             SavesInfo.remIscode_start(MainActivity.this,false);
         }else{
-        switch_code_start.setChecked(iScode_start);
+        switch_CodeStart.setChecked(iScode_start);
         }
         //获取服务类实例化
         final ComponentName name = new ComponentName(this, SecretCodeReceiver.class);
@@ -99,21 +124,10 @@ public class MainActivity extends AppCompatActivity {
         boolean is_CODE_start=intent.getBooleanExtra("iScode_start",false);
         if(iScode_start){
             if(is_CODE_start){
-            Log.d("暗码启动","暗码启动打开并且暗码启动");
+            /*Log.d("暗码启动","暗码启动打开并且暗码启动");*/
             }else{
-              /*  final EditText inputServer = new EditText(this);
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("请输入启动密码").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)
-                        .setNegativeButton("Cancel", null);
-                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        inputServer.getText().toString();
-                    }
-                });
-                builder.show();*/
                isNotCodeStart();
-                Log.d("暗码启动","暗码启动打开桌面启动");
+               /* Log.d("暗码启动","暗码启动打开桌面启动");*/
             }
         }else{
             Log.d("暗码启动","暗码启动未打开");
@@ -134,47 +148,47 @@ public class MainActivity extends AppCompatActivity {
          }
         }
         //按钮1监听
-        btn_aqy.setOnClickListener(new View.OnClickListener() {
+        btn_IQIYI.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(MainActivity.this,VipplayerAcitivity.class);
-                intent.putExtra("Extra_url",aqy_url);
-                //Log.d("Main","准备传送到下一个Acitivity的URL为："+aqy_url);
+                intent.putExtra("Extra_url",sources_IQIYI);
+                //Log.d("Main","准备传送到下一个Acitivity的URL为："+sources_IQIYI);
                 startActivity(intent);
             }
         });
         //按钮2监听
-        btn_txsp.setOnClickListener(new View.OnClickListener() {
+        btn_Tencent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(MainActivity.this,VipplayerAcitivity.class);
-                intent.putExtra("Extra_url",txsp_url);
-                //Log.d("Main","准备传送到下一个Acitivity的URL为："+txsp_url);
+                intent.putExtra("Extra_url",sources_Tencent);
+                //Log.d("Main","准备传送到下一个Acitivity的URL为："+sources_Tencent);
                 startActivity(intent);
             }
         });
         //按钮3监听
-        btn_youku.setOnClickListener(new View.OnClickListener() {
+        btn_Youku.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(MainActivity.this,VipplayerAcitivity.class);
-                intent.putExtra("Extra_url",youku_url);
-                //Log.d("Main","准备传送到下一个Acitivity的URL为："+youku_url);
+                intent.putExtra("Extra_url",sources_Youku);
+                //Log.d("Main","准备传送到下一个Acitivity的URL为："+sources_Youku);
                 startActivity(intent);
             }
         });
         //按钮4监听
-        btn_mgtv.setOnClickListener(new View.OnClickListener() {
+        btn_Mango.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(MainActivity.this,VipplayerAcitivity.class);
-                intent.putExtra("Extra_url",mgtv_url);
-                //Log.d("Main","准备传送到下一个Acitivity的URL为："+mgtv_url);
+                intent.putExtra("Extra_url",sources_Mango);
+                //Log.d("Main","准备传送到下一个Acitivity的URL为："+sources_Mango);
                 startActivity(intent);
             }
         });
               //switch事件监听
-        switch_code_start.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switch_CodeStart.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
@@ -217,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
             //获取网络数据
             SharedPreferences preferences = getSharedPreferences("config",MODE_PRIVATE);
             String path =preferences.getString("Checkurl","");
-            //Log.d("MSG","Urlpath检查："+path);
+            //Log.d("MSG","urlPath检查："+path);
             try {
                 URL url=new URL(path);
                 HttpURLConnection connection= (HttpURLConnection) url.openConnection();
@@ -256,16 +270,16 @@ public class MainActivity extends AppCompatActivity {
                                     String newversionname = pullParser.nextText();
                                     //Log.d("Server_info","newversionname="+ newversionname);
                                 }else if("versioncode".equals(nodeName)){
-                                    newversioncode =Integer.parseInt(pullParser.nextText());
-                                    //Log.d("Server_info","newversioncode="+ newversioncode.toString());
+                                    newVersionCode =Integer.parseInt(pullParser.nextText());
+                                    //Log.d("Server_info","newVersionCode="+ newVersionCode.toString());
                                 }
                                 else if("downloadurl".equals(nodeName)){
-                                    newdownloadurl = pullParser.nextText();
-                                    //Log.d("Server_info","newdownloadurl="+newdownloadurl);
+                                    newDownloadUrl = pullParser.nextText();
+                                    //Log.d("Server_info","newDownloadUrl="+newDownloadUrl);
                                 }
-                                else if("newinfo".equals(nodeName)){
-                                    newinfo=pullParser.nextText();
-                                    //Log.d("Server_info","newinfo="+newinfo);
+                                else if("newInfo".equals(nodeName)){
+                                    newInfo=pullParser.nextText();
+                                    //Log.d("Server_info","newInfo="+newInfo);
                                 }
                                 break;
                             }
@@ -312,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
             //选择更新按钮后事件
             case R.id.Check_update:
-                //Log.d("登录页面_检查更新","选择更新，当前检查的页面是："+Urlpath);
+                //Log.d("登录页面_检查更新","选择更新，当前检查的页面是："+urlPath);
                 //获取是否连接网络
                 boolean isNetConnected = NetUtils.isNetConnected(MainActivity.this);
                 if(!isNetConnected){
@@ -324,12 +338,12 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     SharedPreferences preferences = getSharedPreferences("config",MODE_PRIVATE);
                     //String str1 = preferences.getString("str1","");
-                    Urlpath=preferences.getString("Checkurl","");
+                    urlPath=preferences.getString("Checkurl","");
                     //设置更新文件地址
-                    if(Urlpath.isEmpty()){
+                    if(urlPath.isEmpty()){
                         Toast.makeText(MainActivity.this,"更新地址为空,请输入更新地址！",Toast.LENGTH_SHORT).show();
                         setCheckUpdate();
-                        //Urlpath="http://texxa7.natappfree.cc/update.xml";
+                        //urlPath="http://texxa7.natappfree.cc/update.xml";
                         break;
                     }else{
                     //获取服务器端信息
@@ -337,7 +351,7 @@ public class MainActivity extends AppCompatActivity {
                         //获取本地信息
                     int versionCode = APKVersionCodeUtils.getVersionCode(this);
                     //判断是否需要更新
-                    if (versionCode < newversioncode) {
+                    if (versionCode < newVersionCode) {
                         Toast toast = Toast.makeText( MainActivity.this, null, Toast.LENGTH_SHORT);
                         toast.setText("有新的版本可以更新，确认是否更新");
                         toast.show();
@@ -351,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
                                 isNotwifi.dismiss();
                                 Intent intent = new Intent();
                                 intent.setAction("android.intent.action.VIEW");
-                                Uri content_url = Uri.parse(newdownloadurl);
+                                Uri content_url = Uri.parse(newDownloadUrl);
                                 intent.setData(content_url);
                                 startActivity(intent);
                             }
@@ -364,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
                         });
                         //dialog.setIcon(R.mipmap.alter_logo);//设置对话框icon
                         dialog.setTitle("有新的版本，确认是否更新");//设置对话框标题
-                        dialog.setMessage(newinfo);//设置文字显示内容
+                        dialog.setMessage(newInfo);//设置文字显示内容
                         dialog.setCancelable(false);//不能通过BACK取消
                         //分别设置三个button
                         dialog.setButton(DialogInterface.BUTTON_POSITIVE,"现在更新", new DialogInterface.OnClickListener() {
@@ -380,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
                                     //Log.d("登录页面_检查更新","当前为WIFI连接，开始下载程序...");
                                     Intent intent = new Intent();
                                     intent.setAction("android.intent.action.VIEW");
-                                    Uri content_url = Uri.parse(newdownloadurl);
+                                    Uri content_url = Uri.parse(newDownloadUrl);
                                     intent.setData(content_url);
                                     startActivity(intent);
                                 }else{
@@ -426,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.Start_code:
                 //修改启动密码的方法调用
-                setStartcode();
+                setstartCode();
                 break;
             default:
         }
@@ -467,8 +481,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //手动设置启动密码的方法
-    private void setStartcode(){
-        if(!codeisContains){
+    private void setstartCode(){
+        if(!codeIsContains){
             Toast.makeText(MainActivity.this,"初次使用，请设置启动密码",Toast.LENGTH_SHORT).show();
             final EditText inputServer = new EditText(this);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -481,20 +495,20 @@ public class MainActivity extends AppCompatActivity {
             });
             builder.show();
         }else{
-            final EditText old_startcode = new EditText(this);
-            final EditText new_startcode = new EditText(this);
+            final EditText old_startCode = new EditText(this);
+            final EditText new_startCode = new EditText(this);
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("启动密码修改").setMessage("请输入旧密码").setIcon(android.R.drawable.ic_dialog_info).setView(old_startcode);
+            builder.setTitle("启动密码修改").setMessage("请输入旧密码").setIcon(android.R.drawable.ic_dialog_info).setView(old_startCode);
             builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     //判断输入旧密码是否正确
-                    if(old_startcode.getText().toString().equals(startcode)){
-                    builder.setMessage("请输入新密码").setIcon(android.R.drawable.ic_dialog_info).setView(new_startcode);
+                    if(old_startCode.getText().toString().equals(startCode)){
+                    builder.setMessage("请输入新密码").setIcon(android.R.drawable.ic_dialog_info).setView(new_startCode);
                     builder.setPositiveButton("修改密码", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            SavesInfo.SaveCode(MainActivity.this,new_startcode.getText().toString());
-                            Toast.makeText(MainActivity.this,"设置密码为："+ new_startcode.getText().toString(),Toast.LENGTH_SHORT).show();
+                            SavesInfo.SaveCode(MainActivity.this,new_startCode.getText().toString());
+                            Toast.makeText(MainActivity.this,"设置密码为："+ new_startCode.getText().toString(),Toast.LENGTH_SHORT).show();
                         }
                     });
                     builder.show();
@@ -509,7 +523,7 @@ public class MainActivity extends AppCompatActivity {
 
     //暗码启动桌面启动提示框
     private void isNotCodeStart(){
-        if(!codeisContains){
+        if(!codeIsContains){
             Toast.makeText(MainActivity.this,"初次使用，请设置启动密码",Toast.LENGTH_SHORT).show();
         }
         final EditText inputServer = new EditText(this);
@@ -518,9 +532,9 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 Log.d("暗码启动","暗码启动密码验证");
-                if(codeisContains){
+                if(codeIsContains){
                     Log.d("暗码启动","暗码启动密码验证,密码存在");
-                    if(inputServer.getText().toString().equals(startcode)){
+                    if(inputServer.getText().toString().equals(startCode)){
                         //Log.d("暗码启动","启动密码密码输入正确!");
                         Toast.makeText(MainActivity.this,"密码正确!",Toast.LENGTH_SHORT).show();
                     }else{
@@ -664,6 +678,86 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+   //获取定位信息
+    public void location(){
+        //声明AMapLocationClient类对象
+        final AMapLocationClient mLocationClient;
+        //初始化定位
+        mLocationClient = new AMapLocationClient(getApplicationContext());
+        //定位权限检测
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 255);
+            }
+            Log.d("Webvideoplayer","GPS测试，未获得定位权限");
+        } else {
+            Log.d("Webvideoplayer","GPS测试，获得定位权限");
+        }
+        //声明AMapLocationClientOption对象
+        AMapLocationClientOption mLocationOption;
+        //初始化AMapLocationClientOption对象
+        mLocationOption = new AMapLocationClientOption();
+        //设置定位模式为AMapLocationMode.Device_Sensors，仅设备模式。
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Device_Sensors);
+        //设置是否允许模拟位置,默认为true，允许模拟位置
+        mLocationOption.setMockEnable(true);
+        //获取一次定位结果：
+        //该方法默认为false。
+        mLocationOption.setOnceLocation(true);
+        //获取最近3s内精度最高的一次定位结果：
+        //设置setOnceLocationLatest(boolean b)接口为true，启动定位时SDK会返回最近3s内精度最高的一次定位结果。如果设置其为true，setOnceLocation(boolean b)接口也会被设置为true，反之不会，默认为false。
+        mLocationOption.setOnceLocationLatest(true);
 
+        //启动定位
+        mLocationClient.startLocation();
+        //异步获取定位结果
+        mLocationClient.setLocationListener(new AMapLocationListener() {
+            @Override
+            public void onLocationChanged(AMapLocation aMapLocation) {
+                if (aMapLocation != null) {
+                    if (aMapLocation.getErrorCode() == 0) {
+                       /* //解析定位结果
+                        Log.d("Webvideoplayer","解析定位信息成功"+aMapLocation.getAddress()+"\n"
+                                +"经度："+aMapLocation.getLatitude()+"纬度："+aMapLocation.getLongitude());
+                        Toast toast = Toast.makeText( MainActivity.this, null, Toast.LENGTH_SHORT);
+                        toast.setText("当前位置："+aMapLocation.getAddress());
+                        toast.show();
+                        Log.d("Webvideoplayer","解析定位信息成功城市"+aMapLocation.getCity());
+                        //获取城市信息*/
+                        text_Location.setText(aMapLocation.getCity());
+                        //停止定位
+                        mLocationClient.stopLocation();
+
+                    }else{
+                      /*  //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
+                        Log.d("Webvideoplayer","解析定位信息错误, 错误码:"
+                                + aMapLocation.getErrorCode() + ", 错误信息:"
+                                + aMapLocation.getErrorInfo());
+                        Toast toast = Toast.makeText( MainActivity.this, null, Toast.LENGTH_SHORT);
+                        toast.setText("定位错误，定位诊断：");
+                        toast.show();*/
+                        //获取城市信息
+                        text_Location.setText("定位错误");
+                        //停止定位
+                        mLocationClient.stopLocation();
+                    }
+                }
+            }
+        });
+    }
+
+    //重新获取定位信息
+    public void restart_location(){
+        //判断是否获取定位成功
+        if(text_Location.getText().equals("定位错误")){
+            Log.d("Location判断","错误"+text_Location.getText());
+            location();
+        }else{
+            //重新获取定位信息
+            Log.d("Location判断","正确"+text_Location.getText());
+
+        }
+
+    }
 
 }

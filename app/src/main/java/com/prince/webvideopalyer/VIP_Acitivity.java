@@ -197,8 +197,8 @@ public class VIP_Acitivity extends AppCompatActivity {
         VIP_Acitivity.this.finish();
         Intent intent=new Intent(VIP_Acitivity.this,VipplayerAcitivity.class);
         //Log.d("VIP_A","准备返回VipplayerAcitivity");
-        //intent.putExtra("Extra_url",youku_url);
-        //Log.d("Main","准备传送到下一个Acitivity的URL为："+youku_url);
+        //intent.putExtra("Extra_url",sources_Youku);
+        //Log.d("Main","准备传送到下一个Acitivity的URL为："+sources_Youku);
         startActivity(intent);
     }
 
