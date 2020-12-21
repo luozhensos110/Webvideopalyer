@@ -7,8 +7,8 @@ android {
         applicationId "com.prince.webvideopalyer"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 19
-        versionName "1.5.4"
+        versionCode 18
+        versionName "1.5.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -20,16 +20,14 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.just.agentweb:agentweb:4.1.3'
-    // (必选)引入AgentWeb用于替代Webview
+    implementation 'com.just.agentweb:agentweb:4.1.3' // (必选)引入AgentWeb用于替代Webview
     //implementation 'com.just.agentweb:filechooser:4.1.3'// (可选)
     //implementation 'com.download.library:Downloader:4.1.3'//下载组件
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation files('libs/AMap3DMap_7.4.0_AMapNavi_7.4.0_AMapLocation_4.9.0_20200416.jar')
 }
