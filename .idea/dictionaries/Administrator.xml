@@ -4,6 +4,7 @@
       <w>acitivity</w>
       <w>addr</w>
       <w>agentweb</w>
+      <w>amap</w>
       <w>autofill</w>
       <w>baidu</w>
       <w>checkupdate</w>
@@ -18,11 +19,13 @@
       <w>getphonesn</w>
       <w>imei</w>
       <w>imsi</w>
+      <w>iqiyi</w>
       <w>iscode</w>
       <w>ivback</w>
       <w>mgtv</w>
       <w>miui</w>
       <w>natapp</w>
+      <w>navi</w>
       <w>newdownloadurl</w>
       <w>newinfo</w>
       <w>newurl</w>
@@ -33,10 +36,12 @@
       <w>powermanager</w>
       <w>sback</w>
       <w>scode</w>
+      <w>securitycenter</w>
       <w>serverurl</w>
       <w>setbrightness</w>
       <w>setvolness</w>
       <w>startcode</w>
+      <w>tencent</w>
       <w>theversion</w>
       <w>tiankong</w>
       <w>txsp</w>

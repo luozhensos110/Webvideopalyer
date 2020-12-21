@@ -40,13 +40,13 @@ class SavesInfo {
         editor.apply();
     }
     //保存启动密码
-    static void  SaveCode(Context context, String startcode){
+    static void  SaveCode(Context context, String startCode){
         //获取SharedPreferences对象
         SharedPreferences sharedPre=context.getSharedPreferences("config", MODE_PRIVATE);
         //获取Editor对象
         SharedPreferences.Editor editor=sharedPre.edit();
         //设置参数
-        editor.putString("StartCode", startcode);
+        editor.putString("startCode", startCode);
         //提交
         editor.apply();
     }

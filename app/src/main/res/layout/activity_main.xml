@@ -35,16 +35,38 @@
                 app:srcCompat="@mipmap/main_title"
                 tools:ignore="ContentDescription" />
 
-            <TextView
-                android:id="@+id/textView"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/select_source"
-                android:textColor="#2196F3"
-                android:textSize="20sp" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="158dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/select_source"
+                    android:textColor="#2196F3"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/img_location"
+                    android:layout_width="33dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scaleType="fitEnd"
+                    app:srcCompat="@drawable/location" />
+
+                <TextView
+                    android:id="@+id/textView_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:autoText="false"
+                    android:textSize="20sp" />
+            </LinearLayout>
 
             <ImageButton
-                android:id="@+id/imgBtn_aqy"
+                android:id="@+id/imgbtn_IQIYI"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
@@ -52,7 +74,7 @@
                 tools:ignore="ContentDescription" />
 
             <ImageButton
-                android:id="@+id/imgBtn_txsp"
+                android:id="@+id/imgbtn_Tencent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
@@ -60,7 +82,7 @@
                 tools:ignore="ContentDescription" />
 
             <ImageButton
-                android:id="@+id/imgBtn_youku"
+                android:id="@+id/imgbtn_Youku"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
@@ -68,19 +90,18 @@
                 tools:ignore="ContentDescription" />
 
             <ImageButton
-                android:id="@+id/imgBtn_mgtv"
+                android:id="@+id/imgbtn_Mango"
                 android:layout_width="match_parent"
                 android:layout_height="67dp"
                 android:scaleType="fitXY"
                 app:srcCompat="@mipmap/mgtv"
                 tools:ignore="ContentDescription" />
 
-            <FrameLayout
+            <Button
+                android:id="@+id/btn_Navi"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
-                tools:ignore="UselessLeaf">
-
-            </FrameLayout>
+                android:layout_height="wrap_content"
+                android:text="导航" />
 
             <LinearLayout
                 android:layout_width="match_parent"
