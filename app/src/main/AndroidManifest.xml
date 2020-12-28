@@ -35,7 +35,7 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".VipplayerAcitivity"
-            android:configChanges="orientation|layoutDirection|screenSize"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop" />
         <activity android:name=".MainActivity"
